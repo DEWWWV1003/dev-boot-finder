@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+.venv
+*.sqlite3
+# database.db  # (Commented out so they push the mock data if they want to)
+.system_generated/
+*.log
