@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBF Admin - Fraud Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+    <style>
+        .fraud-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .fraud-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent-red);
+        }
+        .fraud-card.safe::before {
+            background-color: #10B981; /* Emerald green */
+        }
+        .fraud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
+        }
+        .fraud-title h4 {
+            margin: 0;
+            color: white;
+            font-size: 1.1rem;
+        }
+        .fraud-title p {
+            margin: 5px 0 0;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .score-badge {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .score-high {
+            background: rgba(220, 38, 38, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+        .score-med {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .fraud-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .detail-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .detail-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+        .detail-group span {
+            color: white;
+            font-size: 0.95rem;
+        }
+        
+        .reason-box {
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #ef4444;
+            margin-bottom: 20px;
+        }
+        .reason-box p {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        .reason-box i {
+            color: #ef4444;
+            margin-right: 8px;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .btn-safe {
+            background-color: transparent;
+            border: 1px solid #10B981;
+            color: #10B981;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-safe:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        .btn-cancel {
+            background-color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cancel:hover {
+            background-color: #b91c1c;
+        }
+        
+        /* Topbar Alert Bell */
+        .topbar-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-right: 20px;
+        }
+        .alert-bell {
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .alert-bell:hover {
+            color: white;
+        }
+        .alert-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-red);
+            border-radius: 50%;
+            display: none; /* hidden by default */
+        }
+    </style>
+</head>
+<body>
+    <div class="dash-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="dash-logo">
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('admin_dashboard') }}"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_banking') }}"><i class="fa-solid fa-building-columns"></i> Banking & Orders</a></li>
+                <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i> Boot Search</a></li>
+                <li><a href="{{ url_for('admin_compare') }}"><i class="fa-solid fa-code-compare"></i> Compare</a></li>
+                <li><a href="{{ url_for('admin_wishlist') }}"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+                <li><a href="#"><i class="fa-solid fa-tag"></i> Deals</a></li>
+                <li class="active"><a href="{{ url_for('admin_fraud') }}"><i class="fa-solid fa-shield-halved"></i> Fraud Detection</a></li>
+                <li><a href="{{ url_for('admin_profile') }}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                <li><a href="{{ url_for('admin_logout') }}" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h2>Fraud & Risk Detection</h2>
+                <div class="topbar-right">
+                    <div class="topbar-icons">
+                        <div class="alert-bell" id="alertBell">
+                            <i class="fa-regular fa-bell"></i>
+                            <div class="alert-dot" id="alertDot"></div>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <img src="{{ url_for('static', filename='images/admin_photo.jpg') }}" alt="User">
+                        <span>{{ session.get('admin_username', 'Admin')|upper }}</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-grid" style="display: block;">
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">Review flagged transactions. The heuristic engine automatically scores incoming orders for potential risk.</p>
+
+                {% if flagged_orders %}
+                    {% for order in flagged_orders %}
+                    <div class="fraud-card" id="fraud-card-{{ order.id }}">
+                        <div class="fraud-header">
+                            <div class="fraud-title">
+                                <h4>Order #{{ order.id }}</h4>
+                                <p>{{ order.timestamp }}</p>
+                            </div>
+                            <div class="score-badge {% if order.risk_score >= 70 %}score-high{% else %}score-med{% endif %}">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                Risk Score: {{ order.risk_score }}/100
+                            </div>
+                        </div>
+                        
+                        <div class="fraud-details">
+                            <div class="detail-group">
+                                <label>Customer</label>
+                                <span>{{ order.username or 'Guest Checkout' }}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Amount</label>
+                                <span>${{ "%.2f"|format(order.total_price) }}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Status</label>
+                                <span>{{ order.status }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="reason-box">
+                            <p><i class="fa-solid fa-circle-info"></i> <strong>Trigger(s):</strong> {{ order.fraud_reason }}</p>
+                        </div>
+                        
+                        <div class="action-bar">
+                            <button class="btn-safe" onclick="resolveFraud({{ order.id }}, 'mark_safe')"><i class="fa-solid fa-check"></i> Mark as Safe</button>
+                            <button class="btn-cancel" onclick="resolveFraud({{ order.id }}, 'cancel')"><i class="fa-solid fa-ban"></i> Cancel Order</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="background: var(--bg-card); padding: 3rem; text-align: center; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-shield-check" style="font-size: 3rem; color: #10B981; margin-bottom: 1rem;"></i>
+                        <h3 style="color: white; margin-bottom: 0.5rem;">All Clear!</h3>
+                        <p style="color: var(--text-secondary);">There are currently no flagged transactions requiring review.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Check for alerts
+        fetch('/api/admin/alerts')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    document.getElementById('alertDot').style.display = 'block';
+                }
+            });
+            
+        function resolveFraud(orderId, action) {
+            fetch('/admin/fraud/resolve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    order_id: orderId,
+                    action: action
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('fraud-card-' + orderId).style.display = 'none';
+                    // Check if we need to hide the red dot
+                    let visibleCards = document.querySelectorAll('.fraud-card[style!="display: none;"]');
+                    if(visibleCards.length === 0) {
+                        document.getElementById('alertDot').style.display = 'none';
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

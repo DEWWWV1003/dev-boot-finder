@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBF Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dash-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="dash-logo">
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="{{ url_for('admin_dashboard') }}"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_banking') }}"><i class="fa-solid fa-building-columns"></i> Banking & Orders</a></li>
+                <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i> Boot Search</a></li>
+                <li><a href="{{ url_for('admin_compare') }}"><i class="fa-solid fa-code-compare"></i> Compare</a></li>
+                <li><a href="{{ url_for('admin_wishlist') }}"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+                <li><a href="#"><i class="fa-solid fa-tag"></i> Deals</a></li>
+                <li><a href="{{ url_for('admin_users') }}"><i class="fa-solid fa-users"></i> Registered Users</a></li>
+                <li><a href="{{ url_for('admin_fraud') }}"><i class="fa-solid fa-shield-halved"></i> Fraud Detection</a></li>
+                <li><a href="{{ url_for('admin_inventory') }}"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a></li>
+                <li><a href="{{ url_for('admin_marketing') }}"><i class="fa-solid fa-bullhorn"></i> Marketing</a></li>
+                <li><a href="{{ url_for('admin_analytics') }}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+                <li><a href="{{ url_for('admin_support') }}"><i class="fa-solid fa-headset"></i> Support Desk</a></li>
+                <li><a href="{{ url_for('admin_ai') }}"><i class="fa-solid fa-microchip"></i> AI Sizing Engine</a></li>
+
+
+                <li><a href="{{ url_for('admin_profile') }}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                <li><a href="{{ url_for('admin_logout') }}" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h2>Marketing & Promotions</h2>
+                <div class="topbar-right">
+                    <div class="topbar-icons" style="display: flex; align-items: center; gap: 20px; margin-right: 20px;">
+                        <a href="{{ url_for('admin_fraud') }}" style="text-decoration: none;">
+                            <div class="alert-bell" id="alertBell" style="position: relative; color: var(--text-secondary); font-size: 1.2rem;">
+                                <i class="fa-regular fa-bell"></i>
+                                <div class="alert-dot" id="alertDot" style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; display: none;"></div>
+                            </div>
+                        </a>
+                        <div class="admin-profile" style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 35px; height: 35px; background: var(--accent-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+                                A
+                            </div>
+                            <span>Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="dash-content">
+        
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="background: rgba(181, 55, 242, 0.05); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                        <h3 style="margin-top: 0; color: var(--accent-purple);"><i class="fa-solid fa-ticket"></i> Promo Codes</h3>
+                        <p style="color: var(--text-secondary);">Create and manage discount codes.</p>
+                        <div style="margin-top: 20px; display: flex; gap: 10px;">
+                            <input type="text" placeholder="e.g. SUMMER20" style="flex-grow: 1; background: #000; border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: 4px;">
+                            <input type="number" placeholder="Discount %" style="width: 100px; background: #000; border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: 4px;">
+                            <button style="background: var(--accent-purple); color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold;">Create</button>
+                        </div>
+                        <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                            <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">
+                                        <th style="padding-bottom: 10px;">Code</th>
+                                        <th style="padding-bottom: 10px;">Usage Limit</th>
+                                        <th style="padding-bottom: 10px;">Revenue Gen</th>
+                                        <th style="padding-bottom: 10px;">Expiry Date</th>
+                                        <th style="padding-bottom: 10px;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        <td style="padding: 12px 0;"><strong>WELCOME10</strong> <span style="color: var(--text-secondary); font-size: 0.8rem;">(10% Off)</span></td>
+                                        <td style="padding: 12px 0;">142 / 500</td>
+                                        <td style="padding: 12px 0; color: var(--accent-green);">$3,420.00</td>
+                                        <td style="padding: 12px 0;">No Expiry</td>
+                                        <td style="padding: 12px 0;"><span style="background: rgba(74, 222, 128, 0.1); color: #4ade80; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">Active</span></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        <td style="padding: 12px 0;"><strong>SUMMER20</strong> <span style="color: var(--text-secondary); font-size: 0.8rem;">(20% Off)</span></td>
+                                        <td style="padding: 12px 0;">500 / 500</td>
+                                        <td style="padding: 12px 0; color: var(--accent-green);">$12,850.50</td>
+                                        <td style="padding: 12px 0;">Aug 31, 2026</td>
+                                        <td style="padding: 12px 0;"><span style="background: rgba(255, 0, 127, 0.1); color: #ff007f; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">Depleted</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0;"><strong>FLASH50</strong> <span style="color: var(--text-secondary); font-size: 0.8rem;">(50% Off)</span></td>
+                                        <td style="padding: 12px 0;">45 / 100</td>
+                                        <td style="padding: 12px 0; color: var(--accent-green);">$890.00</td>
+                                        <td style="padding: 12px 0;">May 01, 2026</td>
+                                        <td style="padding: 12px 0;"><span style="background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">Expired</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="background: rgba(0, 229, 255, 0.05); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                        <h3 style="margin-top: 0; color: var(--accent-blue);"><i class="fa-solid fa-image"></i> Storefront Banner</h3>
+                        <p style="color: var(--text-secondary);">Manage the hero banner on the user storefront.</p>
+                        <div style="margin-top: 20px;">
+                            <label style="color: var(--text-secondary); display: block; margin-bottom: 5px;">Banner Headline</label>
+                            <input type="text" value="New DBF X Collection Drops Friday!" style="width: 100%; background: #000; border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                <input type="checkbox" id="bannerActive" checked>
+                                <label for="bannerActive" style="color: white;">Banner is Live</label>
+                            </div>
+                            <button style="background: var(--accent-blue); color: #000; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; width: 100%;">Update Storefront</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+</main>
+    </div>
+
+    <!-- Chart Script -->
+    <script>
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        
+        let gradientVisits = ctx.createLinearGradient(0, 0, 0, 300);
+        gradientVisits.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+        gradientVisits.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        let gradientConversions = ctx.createLinearGradient(0, 0, 0, 300);
+        gradientConversions.addColorStop(0, 'rgba(220, 38, 38, 0.4)');
+        gradientConversions.addColorStop(1, 'rgba(220, 38, 38, 0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['0', '4', '8', '12', '16', '20', '24', '27', '30'],
+                datasets: [
+                    {
+                        label: 'Site Visits',
+                        data: [40, 75, 70, 150, 110, 130, 100, 140, 100],
+                        borderColor: '#ffffff',
+                        backgroundColor: gradientVisits,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Lead Conversions',
+                        data: [30, 50, 40, 90, 75, 110, 80, 120, 140],
+                        borderColor: '#dc2626', // Red
+                        backgroundColor: gradientConversions,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#dc2626',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1a1d24',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#30363d',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: true,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 200,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#888', stepSize: 50 }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#888' }
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+            }
+        });
+        
+        fetch('/api/admin/alerts')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    document.getElementById('alertDot').style.display = 'block';
+                }
+            });
+    </script>
+</body>
+</html>

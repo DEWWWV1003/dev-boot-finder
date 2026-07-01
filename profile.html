@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Dev Boot Finder</title>
+    <!-- Google Fonts: Outfit for heading/UI, Inter for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+    <style>
+        .user-profile-layout {
+            padding: 8rem 5% 5rem 5%;
+            min-height: 80vh;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .user-sidebar {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            height: fit-content;
+        }
+        
+        .user-avatar-lg {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-red) 0%, #ff4d4d 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-family: var(--font-heading);
+            font-weight: 800;
+            margin: 0 auto 1.5rem auto;
+            box-shadow: 0 10px 25px rgba(211, 47, 47, 0.3);
+        }
+        
+        .user-sidebar h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .user-sidebar p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .user-nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+        
+        .user-nav-list li a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+        }
+        
+        .user-nav-list li a:hover, .user-nav-list li a.active {
+            background: rgba(211, 47, 47, 0.1);
+            color: var(--accent-red);
+        }
+        
+        .user-content {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+        }
+        
+        .user-content h2 {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .info-block label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-block p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .order-history-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .order-history-box i {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .user-profile-layout {
+                grid-template-columns: 1fr;
+                padding-top: 6rem;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="user-profile-layout">
+    <aside class="user-sidebar">
+        <div class="user-avatar-lg">
+            {{ user['username'][0]|upper if user else 'U' }}
+        </div>
+        <h3>{{ user['username'] if user else 'Guest' }}</h3>
+        <p>Elite Member</p>
+        
+        <ul class="user-nav-list">
+            <li><a href="#" class="tab-link active" onclick="showTab('account-tab', this)"><i class="fa-solid fa-user"></i> Account Details</a></li>
+            <li><a href="#" class="tab-link" onclick="showTab('orders-tab', this)"><i class="fa-solid fa-box-open"></i> Order History</a></li>
+            <li><a href="#" class="tab-link" onclick="showTab('wishlist-tab', this)"><i class="fa-solid fa-heart"></i> Wishlist</a></li>
+            <li><a href="#" class="tab-link" onclick="showTab('settings-tab', this)"><i class="fa-solid fa-gear"></i> Preferences & Settings</a></li>
+            <li><a href="{{ url_for('logout') }}" style="color: #ff4d4d; margin-top: 1rem;"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a></li>
+        </ul>
+    </aside>
+    
+    <main class="user-content">
+        {% if message %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="background: rgba(46, 125, 50, 0.2); border-color: #2e7d32; color: #a5d6a7;">
+            <i class="fa-solid fa-circle-check me-2"></i>{{ message }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+        
+        <!-- ACCOUNT DETAILS TAB -->
+        <div id="account-tab" class="tab-pane active" style="display: block;">
+            <h2>Account Overview</h2>
+            <form method="POST" action="{{ url_for('profile') }}">
+                <div class="info-grid">
+                    <div class="info-block">
+                        <label>Full Name</label>
+                        <input type="text" name="full_name" class="form-control" style="background: rgba(255,255,255,0.05); color: var(--text-primary); border-color: rgba(255,255,255,0.1);" value="{{ user['full_name'] if user and user['full_name'] else '' }}">
+                    </div>
+                    <div class="info-block">
+                        <label>Email Address</label>
+                        <input type="email" name="email" class="form-control" style="background: rgba(255,255,255,0.05); color: var(--text-primary); border-color: rgba(255,255,255,0.1);" value="{{ user['email'] if user and user['email'] else '' }}">
+                    </div>
+                    <div class="info-block">
+                        <label>Preferred Position</label>
+                        <select name="favorite_position" class="form-select" style="background: rgba(255,255,255,0.05); color: var(--text-primary); border-color: rgba(255,255,255,0.1);">
+                            <option value="" {% if not user or not user['favorite_position'] %}selected{% endif %}>Select Position</option>
+                            <option value="Goalkeeper" {% if user and user['favorite_position'] == 'Goalkeeper' %}selected{% endif %}>Goalkeeper</option>
+                            <option value="Defender" {% if user and user['favorite_position'] == 'Defender' %}selected{% endif %}>Defender</option>
+                            <option value="Midfielder" {% if user and user['favorite_position'] == 'Midfielder' %}selected{% endif %}>Midfielder</option>
+                            <option value="Attacker" {% if user and user['favorite_position'] == 'Attacker' %}selected{% endif %}>Attacker</option>
+                        </select>
+                    </div>
+                    <div class="info-block">
+                        <label>Username (Read-Only)</label>
+                        <input type="text" class="form-control" style="background: rgba(0,0,0,0.2); color: var(--text-muted); border-color: transparent;" value="{{ user['username'] if user else 'Guest' }}" disabled>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-crimson fw-bold px-4 rounded-pill"><i class="fa-solid fa-floppy-disk me-2"></i> Save Profile</button>
+            </form>
+        </div>
+        
+        <!-- ORDER HISTORY TAB -->
+        <div id="orders-tab" class="tab-pane" style="display: none;">
+            <h2>Order History</h2>
+            {% if orders and orders|length > 0 %}
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                {% for o in orders %}
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <h5 style="margin: 0; color: var(--text-primary);">Order #{{ o['id'] }}</h5>
+                                <small style="color: var(--text-secondary);">Placed on {{ o['timestamp'] }}</small>
+                            </div>
+                            <div style="text-align: right;">
+                                <h5 style="margin: 0; color: var(--accent-red);">${{ "%.2f"|format(o['total_price']) }}</h5>
+                                <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-primary);">{{ o['status'] }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Tracking Bar -->
+                        <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                            <h6 style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem; text-transform: uppercase;">Tracking Status</h6>
+                            <div style="display: flex; justify-content: space-between; position: relative; padding: 0 10px;">
+                                <div style="position: absolute; top: 10px; left: 20px; right: 20px; height: 4px; background: rgba(255,255,255,0.1); z-index: 1;">
+                                    <div style="height: 100%; background: var(--accent-red); width: {% if o['status'] == 'Placed' %}25%{% elif o['status'] == 'Processing' %}50%{% elif o['status'] == 'Shipped' %}75%{% else %}100%{% endif %}; transition: width 1s ease;"></div>
+                                </div>
+                                <div style="position: relative; z-index: 2; text-align: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--accent-red); margin: 0 auto 5px auto; box-shadow: 0 0 10px rgba(211,47,47,0.5);"></div>
+                                    <small style="color: white; font-weight: bold;">Placed</small>
+                                </div>
+                                <div style="position: relative; z-index: 2; text-align: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: {% if o['status'] in ['Processing', 'Shipped', 'Delivered'] %}var(--accent-red){% else %}rgba(255,255,255,0.2){% endif %}; margin: 0 auto 5px auto;"></div>
+                                    <small style="color: {% if o['status'] in ['Processing', 'Shipped', 'Delivered'] %}white{% else %}var(--text-secondary){% endif %};">Processing</small>
+                                </div>
+                                <div style="position: relative; z-index: 2; text-align: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: {% if o['status'] in ['Shipped', 'Delivered'] %}var(--accent-red){% else %}rgba(255,255,255,0.2){% endif %}; margin: 0 auto 5px auto;"></div>
+                                    <small style="color: {% if o['status'] in ['Shipped', 'Delivered'] %}white{% else %}var(--text-secondary){% endif %};">Shipped</small>
+                                </div>
+                                <div style="position: relative; z-index: 2; text-align: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: {% if o['status'] == 'Delivered' %}var(--accent-red){% else %}rgba(255,255,255,0.2){% endif %}; margin: 0 auto 5px auto;"></div>
+                                    <small style="color: {% if o['status'] == 'Delivered' %}white{% else %}var(--text-secondary){% endif %};">Delivered</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            {% for item in o['items'] %}
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                    <img src="{{ item['image_url'] }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" alt="Boot">
+                                    <div style="flex-grow: 1;">
+                                        <div style="font-weight: 600;">{{ item['boot_name'] }}</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Qty: {{ item['quantity'] }} &times; ${{ "%.2f"|format(item['price_at_purchase']) }}</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Payment Method Mock -->
+                        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px;">
+                            <i class="fa-brands fa-cc-visa" style="font-size: 1.5rem; color: #fff;"></i>
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;">Paid with Visa ending in <strong>4242</strong></span>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <div class="order-history-box">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <h4 class="mb-2">No orders yet</h4>
+                    <p class="text-secondary mb-4">Your locker is looking a bit empty. Grab some new gear!</p>
+                    <a href="{{ url_for('index') }}#catalog-section" class="btn btn-primary" style="padding: 0.8rem 2rem;">Shop Now</a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- WISHLIST TAB -->
+        <div id="wishlist-tab" class="tab-pane" style="display: none;">
+            <h2>My Wishlist</h2>
+            {% if wishlist and wishlist|length > 0 %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+                {% for w in wishlist %}
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; text-align: center; padding-bottom: 1rem;">
+                        <img src="{{ w['image_url'] }}" style="width: 100%; height: 150px; object-fit: cover; margin-bottom: 1rem;" alt="Boot">
+                        <h6 style="margin: 0 10px; font-weight: 600;">{{ w['name'] }}</h6>
+                        <p style="color: var(--accent-red); font-weight: bold; margin: 0.5rem 0;">${{ "%.2f"|format(w['price']) }}</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.1); color: white;">View Details</a>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <div class="order-history-box">
+                    <i class="fa-solid fa-heart-crack"></i>
+                    <h4 class="mb-2">Wishlist Empty</h4>
+                    <p class="text-secondary mb-4">You haven't saved any boots yet.</p>
+                    <a href="{{ url_for('index') }}#catalog-section" class="btn btn-primary" style="padding: 0.8rem 2rem;">Explore Boots</a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- SETTINGS TAB -->
+        <div id="settings-tab" class="tab-pane" style="display: none;">
+            <h2>Preferences & Settings</h2>
+            
+            <div style="display: grid; gap: 2rem; margin-top: 2rem;">
+                <!-- Theme Preferences -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem;">
+                    <h5 style="margin-bottom: 1.5rem; font-family: var(--font-heading);"><i class="fa-solid fa-palette me-2 text-danger"></i> Theme Settings</h5>
+                    <div class="form-check form-switch mb-3" style="font-size: 1.1rem;">
+                        <input class="form-check-input" type="checkbox" id="darkModeSwitch" checked>
+                        <label class="form-check-label ms-2" for="darkModeSwitch" style="color: var(--text-primary);">Dark Mode (Crimson/Obsidian)</label>
+                    </div>
+                    <div class="form-check form-switch" style="font-size: 1.1rem;">
+                        <input class="form-check-input" type="checkbox" id="highContrastSwitch">
+                        <label class="form-check-label ms-2" for="highContrastSwitch" style="color: var(--text-primary);">High Contrast Mode</label>
+                    </div>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem;">
+                    <h5 style="margin-bottom: 1.5rem; font-family: var(--font-heading);"><i class="fa-solid fa-bell me-2 text-danger"></i> Notifications</h5>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" value="" id="emailAlerts" checked style="background-color: var(--accent-red); border-color: var(--accent-red);">
+                        <label class="form-check-label" for="emailAlerts" style="color: var(--text-primary);">
+                            Email Alerts for New Boot Releases
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" value="" id="smsUpdates" checked style="background-color: var(--accent-red); border-color: var(--accent-red);">
+                        <label class="form-check-label" for="smsUpdates" style="color: var(--text-primary);">
+                            SMS Order Tracking Updates
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="promoOffers">
+                        <label class="form-check-label" for="promoOffers" style="color: var(--text-primary);">
+                            Receive Promotional Offers & Deals
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Region Preferences -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem;">
+                    <h5 style="margin-bottom: 1.5rem; font-family: var(--font-heading);"><i class="fa-solid fa-earth-americas me-2 text-danger"></i> Region & Language</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label" style="color: var(--text-secondary);">Language</label>
+                            <select class="form-select" style="background: rgba(255,255,255,0.05); color: white; border-color: var(--border-color);">
+                                <option>English (US)</option>
+                                <option>English (UK)</option>
+                                <option>Español</option>
+                                <option>Français</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <label class="form-label" style="color: var(--text-secondary);">Currency</label>
+                            <select class="form-select" style="background: rgba(255,255,255,0.05); color: white; border-color: var(--border-color);">
+                                <option>USD ($)</option>
+                                <option>EUR (€)</option>
+                                <option>GBP (£)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn btn-crimson fw-bold px-4 rounded-pill mt-2" onclick="alert('Settings saved successfully!');"><i class="fa-solid fa-floppy-disk me-2"></i> Save Preferences</button>
+            </div>
+        </div>
+        
+    </main>
+</div>
+
+{% include 'footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function showTab(tabId, el) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-pane').forEach(tab => tab.style.display = 'none');
+        // Show active tab
+        document.getElementById(tabId).style.display = 'block';
+        
+        // Remove active class from all links
+        document.querySelectorAll('.tab-link').forEach(link => link.classList.remove('active'));
+        // Add active class to clicked link
+        el.classList.add('active');
+    }
+</script>
+</body>
+</html>

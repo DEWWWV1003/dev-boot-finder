@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Boot Finder | Create Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}"></head>
+<body>
+    <div class="auth-wrapper">
+
+        <!-- Left Panel: Boot Showcase -->
+        <div class="auth-left">
+            <a class="text-decoration-none brand-container d-inline-flex mb-4" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="logo-img" style="height:60px;">
+            </a>
+            <div class="auth-tagline">
+                <h1>Find your<br><span class="glow-text">Perfect Stud.</span></h1>
+                <p>Create your account to unlock personalized boot recommendations based on your position and gameplay style.</p>
+            </div>
+
+            <!-- Legends Boot Showcase Grid -->
+            <div class="signup-boot-grid">
+                <div class="signup-boot-item nike-item">
+                    <img src="{{ url_for('static', filename='images/boot_nike.png') }}" alt="Nike Mercurial">
+                    <div class="signup-boot-overlay">
+                        <span class="boot-brand-label">Nike</span>
+                        <span class="boot-player-label">Mbappé · CR7 · Rashford</span>
+                    </div>
+                </div>
+                <div class="signup-boot-item adidas-item">
+                    <img src="{{ url_for('static', filename='images/boot_adidas.png') }}" alt="Adidas Predator">
+                    <div class="signup-boot-overlay">
+                        <span class="boot-brand-label">Adidas</span>
+                        <span class="boot-player-label">Bellingham · Messi · Zidane</span>
+                    </div>
+                </div>
+                <div class="signup-boot-item puma-item">
+                    <img src="{{ url_for('static', filename='images/boot_puma.png') }}" alt="Puma Future">
+                    <div class="signup-boot-overlay">
+                        <span class="boot-brand-label">Puma</span>
+                        <span class="boot-player-label">Neymar · Griezmann · Morgan</span>
+                    </div>
+                </div>
+                <div class="signup-boot-item nb-item">
+                    <img src="{{ url_for('static', filename='images/boot_nb.png') }}" alt="New Balance">
+                    <div class="signup-boot-overlay">
+                        <span class="boot-brand-label">New Balance</span>
+                        <span class="boot-player-label">Sadio Mané · Saka · Lavelle</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="signup-brands-row">
+                <span>ADIDAS</span><span>NIKE</span><span>PUMA</span><span>NEW BALANCE</span><span>REEBOK</span>
+            </div>
+        </div>
+
+        <!-- Right Panel: Signup Form -->
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <div class="auth-form-header">
+                    <h2>Create Account</h2>
+                    <p>Join the Dev Boot Finder community today</p>
+                </div>
+
+                {% if error %}
+                <div class="auth-alert error-alert">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form class="auth-form" method="POST" action="{{ url_for('signup') }}" id="signup-form">
+
+                    <div class="form-group">
+                        <label for="full_name">Full Name</label>
+                        <div class="input-icon-wrap">
+                            <i class="fa-solid fa-id-card"></i>
+                            <input type="text" id="full_name" name="full_name"
+                                   placeholder="Your full name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa-solid fa-at"></i>
+                                <input type="text" id="username" name="username"
+                                       placeholder="Choose a username" required autocomplete="username">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" id="email" name="email"
+                                       placeholder="Your email address" required autocomplete="email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="favorite_position">Your Playing Position</label>
+                        <div class="input-icon-wrap">
+                            <i class="fa-solid fa-futbol"></i>
+                            <select id="favorite_position" name="favorite_position" class="form-select">
+                                <option value="">Select your position</option>
+                                <option value="Goalkeeper">Goalkeeper</option>
+                                <option value="Defender">Defender</option>
+                                <option value="Midfielder">Midfielder</option>
+                                <option value="Attacker">Attacker</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="password" name="password"
+                                       placeholder="Min. 6 characters" required autocomplete="new-password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa-solid fa-lock-open"></i>
+                                <input type="password" id="confirm_password" name="confirm_password"
+                                       placeholder="Repeat password" required autocomplete="new-password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password strength indicator -->
+                    <div class="password-strength" id="pass-strength-bar">
+                        <div class="strength-fill" id="strength-fill"></div>
+                    </div>
+                    <div class="strength-label" id="strength-label"></div>
+
+                    <!-- ToS Checkbox -->
+                    <div style="display: flex; align-items: flex-start; gap: 10px; margin: 20px 0;">
+                        <input type="checkbox" id="tos_agreement" name="tos_agreement" required style="margin-top: 4px; accent-color: var(--accent-red);">
+                        <label for="tos_agreement" style="font-size: 0.9rem; color: var(--text-secondary); cursor: pointer;">
+                            I agree to the DBF <a href="{{ url_for('terms') }}" target="_blank" style="color: var(--accent-red); font-weight: 600;">Terms of Service</a> and understand that violations will result in account termination.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn">
+                        <span>Create Account</span>
+                        <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </form>
+
+                <div class="auth-divider"><span>or</span></div>
+
+                <div class="auth-alternate">
+                    <p>Already have an account?</p>
+                    <a href="{{ url_for('login') }}" class="auth-link-btn">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password strength meter
+        const passInput   = document.getElementById('password');
+        const confirmPass = document.getElementById('confirm_password');
+        const fillBar     = document.getElementById('strength-fill');
+        const label       = document.getElementById('strength-label');
+
+        passInput.addEventListener('input', () => {
+            const val = passInput.value;
+            let score = 0;
+            if (val.length >= 6)  score++;
+            if (val.length >= 10) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            const pct = (score / 5) * 100;
+            fillBar.style.width = pct + '%';
+
+            const colors = ['', '#ff007f', '#ff7700', '#ffd700', '#39ff14', '#00f0ff'];
+            const labels = ['', 'Very Weak', 'Weak', 'Moderate', 'Strong', 'Excellent'];
+            fillBar.style.background = colors[score] || '#ff007f';
+            label.textContent = labels[score] || '';
+            label.style.color = colors[score] || '#ff007f';
+        });
+
+        // Live password match check
+        confirmPass.addEventListener('input', () => {
+            if (confirmPass.value && confirmPass.value !== passInput.value) {
+                confirmPass.style.borderColor = 'var(--accent-pink, #ff007f)';
+            } else {
+                confirmPass.style.borderColor = '';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Virtual Try-On | Pro Boot Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Outfit', sans-serif; }
+        
+        body {
+            background-color: #0a0a0f;
+        }
+
+        .ar-container {
+            margin-top: 80px;
+            padding: 30px 0;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .studio-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        /* ── AR Viewport ── */
+        .ar-viewport {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 600px;
+            background: #000;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 210, 255, 0.15);
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            margin-bottom: 20px;
+        }
+
+        #webcam-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Mirror effect */
+        }
+
+        /* HUD Guides */
+        .hud-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+            z-index: 5;
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 210, 255, 0.8);
+            box-shadow: 0 0 15px #00d2ff;
+            animation: scan 3s infinite linear;
+            pointer-events: none;
+            z-index: 6;
+        }
+        
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .instruction-badge {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 10;
+        }
+
+        /* The Draggable Boot Overlay */
+        .boot-overlay-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: move;
+            z-index: 15;
+            touch-action: none; /* Crucial for touch dragging */
+        }
+
+        .boot-overlay-container img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+            pointer-events: none; /* Let container handle events */
+            transform: scale(1) rotate(0deg); /* Managed via JS */
+        }
+
+        /* ── Controls ── */
+        .controls-panel {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .slider-group {
+            margin-bottom: 15px;
+        }
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            color: #aaa;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .form-range {
+            accent-color: #00d2ff;
+        }
+
+        /* Boot Selector */
+        .boot-selector {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .boot-selector::-webkit-scrollbar { height: 4px; }
+        .boot-selector::-webkit-scrollbar-track { background: transparent; }
+        .boot-selector::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        
+        .boot-thumb {
+            flex: 0 0 80px;
+            height: 80px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            background: rgba(255,255,255,0.05);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .boot-thumb img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .boot-thumb.active {
+            border-color: #00d2ff;
+            background: rgba(0,210,255,0.1);
+            transform: scale(1.05);
+        }
+
+        .btn-capture {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(56, 239, 125, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-capture:hover { transform: translateY(-2px); }
+
+        /* Snapshot Modal Canvas */
+        #snapshot-canvas {
+            width: 100%;
+            border-radius: 16px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="ar-container container">
+    <div class="text-center mb-4">
+        <h1 class="studio-title"><i class="fa-solid fa-vr-cardboard"></i> AR Virtual Try-On</h1>
+        <p class="text-muted mb-0">Point your camera at your foot. Position the boot to see how it looks.</p>
+    </div>
+
+    <!-- AR VIEWPORT -->
+    <div class="ar-viewport" id="ar-viewport">
+        <div class="instruction-badge"><i class="fa-solid fa-camera"></i> Camera Active</div>
+        <div class="scan-line"></div>
+        <div class="hud-overlay"></div>
+        
+        <video id="webcam-video" autoplay playsinline></video>
+        
+        <div class="boot-overlay-container" id="boot-overlay-container">
+            <img src="{{ url_for('static', filename='images/boot_nike.png') }}" id="boot-overlay-img" alt="Boot Overlay">
+        </div>
+        
+        <canvas id="snapshot-canvas"></canvas>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-panel">
+        
+        <div class="slider-group">
+            <label><span><i class="fa-solid fa-expand"></i> Scale</span> <span id="scale-val">100%</span></label>
+            <input type="range" class="form-range" id="scale-slider" min="0.5" max="2" step="0.05" value="1">
+        </div>
+        
+        <div class="slider-group">
+            <label><span><i class="fa-solid fa-rotate-right"></i> Rotation</span> <span id="rotate-val">0°</span></label>
+            <input type="range" class="form-range" id="rotate-slider" min="-180" max="180" step="1" value="0">
+        </div>
+
+        <div class="mt-4">
+            <label style="color:#aaa; font-size:0.75rem; font-weight:700; text-transform:uppercase; margin-bottom:10px; display:block;">Select Model</label>
+            <div class="boot-selector">
+                <div class="boot-thumb active" data-img="{{ url_for('static', filename='images/boot_nike.png') }}">
+                    <img src="{{ url_for('static', filename='images/boot_nike.png') }}">
+                </div>
+                <div class="boot-thumb" data-img="{{ url_for('static', filename='images/boot_adidas.png') }}">
+                    <img src="{{ url_for('static', filename='images/boot_adidas.png') }}">
+                </div>
+                <div class="boot-thumb" data-img="{{ url_for('static', filename='images/boot_puma.png') }}">
+                    <img src="{{ url_for('static', filename='images/boot_puma.png') }}">
+                </div>
+                <div class="boot-thumb" data-img="{{ url_for('static', filename='images/boot_nb.png') }}">
+                    <img src="{{ url_for('static', filename='images/boot_nb.png') }}">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-capture" id="btn-capture">
+            <i class="fa-solid fa-camera-retro me-2"></i> Capture Look
+        </button>
+    </div>
+</div>
+
+<!-- Modal for Snapshot -->
+<div class="modal fade" id="snapshotModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="fa-solid fa-check-circle text-success"></i> Look Captured!</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="snapshot-result" src="" class="img-fluid rounded-4 shadow-lg mb-3" alt="Snapshot">
+                <p class="text-muted">Looking fresh! Share this with your friends or proceed to buy.</p>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Try Another</button>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">Shop Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 1. WEBCAM SETUP
+    const video = document.getElementById('webcam-video');
+    
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' } // Prefer back camera on mobile
+        })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(err => {
+            console.error("Camera access denied or error:", err);
+            document.querySelector('.instruction-badge').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-warning"></i> Camera Denied';
+            alert("Please allow camera access to use the AR Try-On feature.");
+        });
+    }
+
+    // 2. OVERLAY MANIPULATION (Transformations)
+    const overlayImg = document.getElementById('boot-overlay-img');
+    const scaleSlider = document.getElementById('scale-slider');
+    const rotateSlider = document.getElementById('rotate-slider');
+    const scaleVal = document.getElementById('scale-val');
+    const rotateVal = document.getElementById('rotate-val');
+
+    function updateTransform() {
+        const scale = scaleSlider.value;
+        const rotate = rotateSlider.value;
+        overlayImg.style.transform = `scale(${scale}) rotate(${rotate}deg)`;
+        scaleVal.innerText = `${Math.round(scale * 100)}%`;
+        rotateVal.innerText = `${rotate}°`;
+    }
+
+    scaleSlider.addEventListener('input', updateTransform);
+    rotateSlider.addEventListener('input', updateTransform);
+
+    // 3. OVERLAY DRAGGING (Mouse & Touch)
+    const container = document.getElementById('boot-overlay-container');
+    const viewport = document.getElementById('ar-viewport');
+    
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+
+    // Center initially
+    let currentX = viewport.offsetWidth / 2 - container.offsetWidth / 2;
+    let currentY = viewport.offsetHeight / 2 - container.offsetHeight / 2;
+    container.style.left = `${currentX}px`;
+    container.style.top = `${currentY}px`;
+    container.style.transform = 'none'; // Clear translate(-50%, -50%) for raw pixel dragging
+
+    function startDrag(e) {
+        isDragging = true;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        startX = clientX;
+        startY = clientY;
+        initialX = currentX;
+        initialY = currentY;
+    }
+
+    function doDrag(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+        
+        currentX = initialX + dx;
+        currentY = initialY + dy;
+        
+        container.style.left = `${currentX}px`;
+        container.style.top = `${currentY}px`;
+    }
+
+    function stopDrag() {
+        isDragging = false;
+    }
+
+    container.addEventListener('mousedown', startDrag);
+    document.addEventListener('mousemove', doDrag);
+    document.addEventListener('mouseup', stopDrag);
+
+    container.addEventListener('touchstart', startDrag, {passive: false});
+    document.addEventListener('touchmove', doDrag, {passive: false});
+    document.addEventListener('touchend', stopDrag);
+
+    // 4. BOOT SELECTOR
+    document.querySelectorAll('.boot-thumb').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+            document.querySelectorAll('.boot-thumb').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+            overlayImg.src = thumb.dataset.img;
+        });
+    });
+
+    // 5. CAPTURE SNAPSHOT
+    const btnCapture = document.getElementById('btn-capture');
+    const snapshotCanvas = document.getElementById('snapshot-canvas');
+    const snapshotResult = document.getElementById('snapshot-result');
+    const ctx = snapshotCanvas.getContext('2d');
+    
+    const modal = new bootstrap.Modal(document.getElementById('snapshotModal'));
+
+    btnCapture.addEventListener('click', () => {
+        // Set canvas to video resolution
+        snapshotCanvas.width = video.videoWidth || viewport.offsetWidth;
+        snapshotCanvas.height = video.videoHeight || viewport.offsetHeight;
+        
+        // Draw video (flipped horizontally if mirrored)
+        ctx.save();
+        ctx.translate(snapshotCanvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
+        ctx.restore();
+
+        // Calculate overlay position relative to video stream dimensions
+        // Because video might be letterboxed in the viewport due to object-fit: cover, 
+        // a perfect overlay requires complex math. 
+        // For this MVP, we will generate the snapshot and simply apply a filter or visual trick
+        // Or we draw the image onto the canvas at the approximated coordinates.
+        
+        const scaleX = snapshotCanvas.width / viewport.offsetWidth;
+        const scaleY = snapshotCanvas.height / viewport.offsetHeight;
+        
+        const imgScale = scaleSlider.value;
+        const imgRotate = rotateSlider.value;
+        
+        const drawX = currentX * scaleX;
+        const drawY = currentY * scaleY;
+        const drawW = container.offsetWidth * scaleX;
+        const drawH = container.offsetHeight * scaleY;
+
+        ctx.save();
+        ctx.translate(drawX + drawW/2, drawY + drawH/2);
+        ctx.rotate(imgRotate * Math.PI / 180);
+        ctx.scale(imgScale, imgScale);
+        ctx.drawImage(overlayImg, -drawW/2, -drawH/2, drawW, drawH);
+        ctx.restore();
+
+        // Show modal with image
+        snapshotResult.src = snapshotCanvas.toDataURL('image/jpeg', 0.9);
+        modal.show();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<nav class="navbar navbar-expand-lg sticky-top" style="background: rgba(10, 10, 12, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease;">
+    <div class="container-fluid px-4 py-1">
+        <a class="navbar-brand text-decoration-none brand-container" href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="logo-img" style="height:45px; border-radius: 4px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border-color: rgba(255,255,255,0.1);">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <style>
+                .clean-link {
+                    color: #b3b3b3 !important;
+                    font-family: 'Outfit', sans-serif;
+                    font-weight: 500;
+                    font-size: 0.85rem;
+                    letter-spacing: 0.5px;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .clean-link:hover {
+                    color: #ffffff !important;
+                }
+                .clean-link i {
+                    font-size: 0.9rem;
+                    opacity: 0.7;
+                    transition: all 0.3s ease;
+                }
+                .clean-link:hover i {
+                    opacity: 1;
+                    color: #00d2ff;
+                }
+            </style>
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0" style="gap: 0.5rem;">
+                <li class="nav-item dropdown">
+                    <a class="nav-link clean-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI & Studio
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" style="background: var(--bg-card); border-color: rgba(255,255,255,0.05); margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <li><a class="dropdown-item py-2" href="{{ url_for('recommend') }}"><i class="fa-solid fa-shoe-prints text-muted me-2"></i> DBF AI Match</a></li>
+                        <li><a class="dropdown-item py-2" href="{{ url_for('customizer') }}"><i class="fa-solid fa-palette text-muted me-2"></i> PRO Design Studio</a></li>
+                        <li><a class="dropdown-item py-2" href="{{ url_for('ar_tryon') }}"><i class="fa-solid fa-vr-cardboard text-muted me-2"></i> AR Try-On</a></li>
+                        <li><a class="dropdown-item py-2" href="{{ url_for('ai_sizing') }}"><i class="fa-solid fa-ruler-combined text-muted me-2"></i> AI 3D Sizing</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link clean-link" href="{{ url_for('position_guide') }}"><i class="fa-solid fa-map-location-dot"></i> Positional Guide</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link clean-link" href="{{ url_for('jerseys') }}"><i class="fa-solid fa-shirt"></i> Jerseys</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link clean-link" href="{{ url_for('news') }}"><i class="fa-solid fa-newspaper"></i> News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link clean-link" href="{{ url_for('index') }}#catalog-section">Store</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+                <div class="input-group d-none d-lg-flex" style="width: 250px;">
+                    <span class="input-group-text border-0 text-secondary" style="background: rgba(255,255,255,0.05);"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="header-search" class="form-control border-0 text-white shadow-none" placeholder="Search boots..." style="background: rgba(255,255,255,0.05); font-size: 0.9rem;">
+                </div>
+                <a href="{{ url_for('cart') }}" class="btn btn-outline-light position-relative">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-badge">
+                        {{ session.get('cart', {})|length }}
+                    </span>
+                </a>
+                
+                {% if 'admin_id' in session %}
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle text-white border-0" style="background: rgba(255,255,255,0.05);" type="button" data-bs-toggle="dropdown">
+                        Admin
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" style="background: var(--bg-card); border-color: rgba(255,255,255,0.05);">
+                        <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}">Sign Out</a></li>
+                    </ul>
+                </div>
+                {% elif 'user_id' in session %}
+                <div class="dropdown">
+                    <button class="btn border-0 dropdown-toggle d-flex align-items-center gap-2 text-white" style="background: rgba(255,255,255,0.05);" type="button" data-bs-toggle="dropdown">
+                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: var(--accent-red);">
+                            {{ session.get('username', 'U')[0]|upper }}
+                        </div>
+                        <span style="font-size: 0.95rem;">{{ session.get('username') }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" style="background: var(--bg-card); border-color: rgba(255,255,255,0.05);">
+                        <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fa-solid fa-user me-2"></i> Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}" style="color: var(--accent-red);"><i class="fa-solid fa-right-from-bracket me-2"></i> Sign Out</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn text-white fw-bold" style="background-color: var(--accent-red); padding: 0.5rem 1.5rem; border-radius: 4px;">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('header-search');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const query = searchInput.value.trim();
+                    if (window.location.pathname === '/' || window.location.pathname === '/index') {
+                        // On index page, the app.js 'input' listener already handles filtering.
+                        // Just scroll to the catalog.
+                        const catalog = document.getElementById('catalog-section');
+                        if (catalog) catalog.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        // On other pages, redirect to home with search query
+                        window.location.href = '/?search=' + encodeURIComponent(query) + '#catalog-section';
+                    }
+                }
+            });
+        }
+    });
+</script>

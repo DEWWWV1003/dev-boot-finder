@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRO Design Studio | Custom Boots</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Outfit', sans-serif; }
+
+        .customizer-page {
+            margin-top: 80px;
+            padding: 50px 0 80px;
+            background: radial-gradient(ellipse at 30% 20%, rgba(58, 123, 213, 0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 80%, rgba(0, 210, 255, 0.06) 0%, transparent 50%),
+                        linear-gradient(180deg, #0a0a0f, #111118);
+            min-height: calc(100vh - 80px);
+        }
+
+        .studio-title {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff 30%, #00d2ff 70%, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .studio-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* ── Boot Preview Canvas ────────────────────── */
+        .boot-canvas {
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 70%);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 520px;
+            overflow: hidden;
+        }
+        .boot-canvas::before {
+            content: '';
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 30px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        svg.boot-svg {
+            width: 100%;
+            max-width: 540px;
+            height: auto;
+            filter: drop-shadow(0 25px 35px rgba(0,0,0,0.6));
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 1;
+        }
+        svg.boot-svg:hover {
+            transform: scale(1.03) rotate(-1deg);
+        }
+
+        .svg-part { transition: fill 0.35s ease, stroke 0.35s ease; }
+
+        /* ── Controls ───────────────────────────────── */
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+        .controls-panel::-webkit-scrollbar { width: 4px; }
+        .controls-panel::-webkit-scrollbar-track { background: transparent; }
+        .controls-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            color: #888;
+            margin-bottom: 10px;
+            margin-top: 8px;
+        }
+        .section-label i { font-size: 0.85rem; color: #555; }
+
+        .color-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .color-swatch {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.2s, border-color 0.25s, box-shadow 0.25s;
+            box-shadow: inset 0 -3px 6px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .color-swatch:hover { transform: scale(1.12); }
+        .color-swatch.active {
+            border-color: #00d2ff;
+            box-shadow: 0 0 0 2px rgba(0,210,255,0.3), inset 0 -3px 6px rgba(0,0,0,0.25);
+            transform: scale(1.15);
+        }
+        .color-swatch.active::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 12px;
+            color: white;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+        }
+
+        .personalization-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            width: 100%;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .personalization-input:focus {
+            outline: none;
+            border-color: #00d2ff;
+            box-shadow: 0 0 0 3px rgba(0,210,255,0.15);
+        }
+        .personalization-input::placeholder { color: #555; }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .input-row > * { flex: 1; }
+
+        /* ── Flag Picker ────────────────────────────── */
+        .flag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .flag-btn {
+            font-size: 1.6rem;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: rgba(255,255,255,0.04);
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.25s, background 0.25s;
+        }
+        .flag-btn:hover { background: rgba(255,255,255,0.08); transform: scale(1.08); }
+        .flag-btn.active {
+            border-color: #00d2ff;
+            background: rgba(0,210,255,0.1);
+            transform: scale(1.1);
+        }
+
+        /* ── Price & CTA ────────────────────────────── */
+        .price-display {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #38ef7d, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-add-custom {
+            width: 100%;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .btn-add-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0, 210, 255, 0.25);
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            margin: 8px 0;
+        }
+
+        /* ── Stud Color Picker ──────────────────────── */
+        .stud-color-row { margin-bottom: 14px; }
+
+        /* ── Stud Type Picker ───────────────────────── */
+        .stud-type-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .stud-option {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .stud-option img {
+            width: 100%;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .stud-option span {
+            display: block;
+            font-size: 0.7rem;
+            color: #888;
+            font-weight: 600;
+        }
+        .stud-option:hover { background: rgba(255,255,255,0.06); }
+        .stud-option:hover img { opacity: 1; }
+        .stud-option.active {
+            border-color: #00d2ff;
+            background: rgba(0,210,255,0.08);
+        }
+        .stud-option.active img { opacity: 1; }
+        .stud-option.active span { color: #00d2ff; }
+    </style>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="customizer-page">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="studio-title">PRO Design Studio</h1>
+            <p class="studio-subtitle">Design your signature boot. Choose colors, add your name, flag &amp; number.</p>
+        </div>
+
+        <div class="row g-4 align-items-start">
+            <!-- ═══ Boot Preview ═══ -->
+            <div class="col-lg-7">
+                <div class="boot-canvas">
+                    <svg class="boot-svg" viewBox="0 0 650 450" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- Upper shading gradient -->
+                            <linearGradient id="shade-upper" x1="0" y1="0" x2="0.2" y2="1">
+                                <stop offset="0%" stop-color="#fff" stop-opacity="0.25"/>
+                                <stop offset="100%" stop-color="#000" stop-opacity="0.45"/>
+                            </linearGradient>
+                            <!-- 3D stud gradient (white conical) -->
+                            <radialGradient id="stud-grad" cx="40%" cy="30%" r="60%">
+                                <stop offset="0%" stop-color="#ffffff"/>
+                                <stop offset="50%" stop-color="#e8e8e8"/>
+                                <stop offset="100%" stop-color="#b0b0b0"/>
+                            </radialGradient>
+                            <!-- Stud shadow -->
+                            <radialGradient id="stud-shadow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#000" stop-opacity="0.3"/>
+                                <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                            </radialGradient>
+                            <!-- Stud highlight -->
+                            <radialGradient id="stud-highlight" cx="35%" cy="25%" r="35%">
+                                <stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>
+                                <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+                            </radialGradient>
+                            <!-- Tongue gradient -->
+                            <linearGradient id="tongue-grad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#fff" stop-opacity="0.15"/>
+                                <stop offset="100%" stop-color="#000" stop-opacity="0.2"/>
+                            </linearGradient>
+                            <!-- Collar inner -->
+                            <linearGradient id="collar-grad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#222"/>
+                                <stop offset="100%" stop-color="#111"/>
+                            </linearGradient>
+                        </defs>
+
+                        <!-- ─── Soleplate ─── -->
+                        <path id="part-soleplate" class="svg-part" d="M95 340 C140 350, 260 358, 380 335 C470 318, 545 335, 560 345 L555 352 C540 358, 460 368, 380 368 C260 370, 125 358, 85 340 Z" fill="#333"/>
+                        <!-- Soleplate edge highlight -->
+                        <path d="M95 340 C140 350, 260 358, 380 335 C470 318, 545 335, 560 345" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+
+                        <!-- ─── Realistic Conical Studs (White) ─── -->
+                        <!-- ─── Realistic Conical Studs (Tiempo) ─── -->
+                        <g id="studs-conical">
+                            <g transform="translate(130, 348)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-8 0 C-6 8, -9 18, -7 22 L7 22 C9 18, 6 8, 8 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <ellipse cx="0" cy="0" rx="8" ry="5" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="0.5"/>
+                                <ellipse cx="-2" cy="-1" rx="3" ry="2" fill="url(#stud-highlight)"/>
+                            </g>
+                            <g transform="translate(185, 352)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-8 0 C-6 8, -9 18, -7 22 L7 22 C9 18, 6 8, 8 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <ellipse cx="0" cy="0" rx="8" ry="5" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="0.5"/>
+                                <ellipse cx="-2" cy="-1" rx="3" ry="2" fill="url(#stud-highlight)"/>
+                            </g>
+                            <g transform="translate(240, 354)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-7 0 C-5 7, -8 16, -6 20 L6 20 C8 16, 5 7, 7 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <ellipse cx="0" cy="0" rx="7" ry="4.5" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="0.5"/>
+                                <ellipse cx="-2" cy="-1" rx="2.5" ry="1.8" fill="url(#stud-highlight)"/>
+                            </g>
+                            <g transform="translate(300, 350)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-7 0 C-5 7, -8 16, -6 20 L6 20 C8 16, 5 7, 7 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <ellipse cx="0" cy="0" rx="7" ry="4.5" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="0.5"/>
+                                <ellipse cx="-2" cy="-1" rx="2.5" ry="1.8" fill="url(#stud-highlight)"/>
+                            </g>
+                            <g transform="translate(360, 342)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-7 0 C-5 7, -8 16, -6 20 L6 20 C8 16, 5 7, 7 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <ellipse cx="0" cy="0" rx="7" ry="4.5" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="0.5"/>
+                                <ellipse cx="-2" cy="-1" rx="2.5" ry="1.8" fill="url(#stud-highlight)"/>
+                            </g>
+                            <g transform="translate(420, 336)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-8 0 C-6 8, -9 18, -7 22 L7 22 C9 18, 6 8, 8 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <ellipse cx="0" cy="0" rx="8" ry="5" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="0.5"/>
+                                <ellipse cx="-2" cy="-1" rx="3" ry="2" fill="url(#stud-highlight)"/>
+                            </g>
+                            <g transform="translate(480, 338)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-8 0 C-6 8, -9 18, -7 22 L7 22 C9 18, 6 8, 8 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <ellipse cx="0" cy="0" rx="8" ry="5" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="0.5"/>
+                                <ellipse cx="-2" cy="-1" rx="3" ry="2" fill="url(#stud-highlight)"/>
+                            </g>
+                            <g transform="translate(530, 342)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-7 0 C-5 7, -8 16, -6 20 L6 20 C8 16, 5 7, 7 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <ellipse cx="0" cy="0" rx="7" ry="4.5" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="0.5"/>
+                                <ellipse cx="-2" cy="-1" rx="2.5" ry="1.8" fill="url(#stud-highlight)"/>
+                            </g>
+                        </g>
+
+                        <!-- ─── Bladed Studs (Mercurial) ─── -->
+                        <g id="studs-bladed" style="display:none;">
+                            <g transform="translate(130, 348)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-6 0 L-2 22 L6 18 L6 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <polygon points="-6,0 6,0 2,2" fill="#f0f0f0" />
+                            </g>
+                            <g transform="translate(185, 352)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-5 0 L-1 22 L7 18 L5 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <polygon points="-5,0 5,0 1,2" fill="#f0f0f0" />
+                            </g>
+                            <g transform="translate(240, 354)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-4 0 L0 20 L8 16 L4 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <polygon points="-4,0 4,0 0,2" fill="#f0f0f0" />
+                            </g>
+                            <g transform="translate(300, 350)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-4 0 L1 20 L9 15 L3 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                                <polygon points="-4,0 3,0 0,2" fill="#f0f0f0" />
+                            </g>
+                            <g transform="translate(360, 342)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-4 0 L2 18 L10 13 L2 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(420, 336)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-5 0 L4 20 L12 14 L3 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(480, 338)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-6 0 L4 21 L12 14 L3 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(530, 342)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-5 0 L3 19 L10 13 L2 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                        </g>
+
+                        <!-- ─── Mixed Studs (Copa) ─── -->
+                        <g id="studs-mixed" style="display:none;">
+                            <g transform="translate(130, 348)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-8 0 C-6 8, -9 18, -7 22 L7 22 C9 18, 6 8, 8 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(185, 352)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-5 0 L-1 22 L7 18 L5 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(240, 354)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-7 0 C-5 7, -8 16, -6 20 L6 20 C8 16, 5 7, 7 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(300, 350)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-4 0 L1 20 L9 15 L3 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(360, 342)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-7 0 C-5 7, -8 16, -6 20 L6 20 C8 16, 5 7, 7 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(420, 336)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-8 0 C-6 8, -9 18, -7 22 L7 22 C9 18, 6 8, 8 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(480, 338)">
+                                <ellipse cx="0" cy="22" rx="9" ry="4" fill="url(#stud-shadow)"/>
+                                <path d="M-6 0 L4 21 L12 14 L3 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(530, 342)">
+                                <ellipse cx="0" cy="20" rx="8" ry="3.5" fill="url(#stud-shadow)"/>
+                                <path d="M-7 0 C-5 7, -8 16, -6 20 L6 20 C8 16, 5 7, 7 0 Z" fill="url(#stud-grad)" stroke="#ccc" stroke-width="0.5"/>
+                            </g>
+                        </g>
+
+                        <!-- ─── Upper (main body) ─── -->
+                        <path id="part-upper" class="svg-part" d="M75 338 C55 270, 80 130, 155 115 C195 108, 230 140, 275 185 C345 245, 490 280, 560 345 C520 310, 420 270, 380 338 C280 358, 145 350, 95 340 Z" fill="#ffffff"/>
+                        <!-- Shading overlay -->
+                        <path d="M75 338 C55 270, 80 130, 155 115 C195 108, 230 140, 275 185 C345 245, 490 280, 560 345 C520 310, 420 270, 380 338 C280 358, 145 350, 95 340 Z" fill="url(#shade-upper)" pointer-events="none"/>
+
+                        <!-- ─── Toe box detail ─── -->
+                        <path d="M75 338 C60 305, 68 240, 95 200" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" fill="none"/>
+
+                        <!-- ─── Heel counter ─── -->
+                        <path id="part-heel" class="svg-part" d="M480 285 C510 270, 545 300, 560 345 C540 325, 510 310, 480 320 Z" fill="rgba(0,0,0,0.15)"/>
+
+                        <!-- ─── Collar (inner) ─── -->
+                        <path d="M155 115 C180 108, 200 112, 210 125 C200 118, 178 112, 155 115 Z" fill="url(#collar-grad)"/>
+
+                        <!-- ─── Tongue ─── -->
+                        <path id="part-tongue" class="svg-part" d="M155 115 C160 90, 175 75, 195 72 C210 72, 220 85, 215 110 C205 105, 185 108, 155 115 Z" fill="#dddddd"/>
+                        <path d="M155 115 C160 90, 175 75, 195 72 C210 72, 220 85, 215 110 C205 105, 185 108, 155 115 Z" fill="url(#tongue-grad)" pointer-events="none"/>
+
+                        <!-- ─── Laces ─── -->
+                        <g id="part-laces" class="svg-part">
+                            <line x1="172" y1="128" x2="208" y2="138" stroke="#222" stroke-width="4" stroke-linecap="round"/>
+                            <line x1="182" y1="145" x2="218" y2="155" stroke="#222" stroke-width="4" stroke-linecap="round"/>
+                            <line x1="195" y1="160" x2="232" y2="172" stroke="#222" stroke-width="4" stroke-linecap="round"/>
+                            <line x1="210" y1="178" x2="248" y2="190" stroke="#222" stroke-width="4" stroke-linecap="round"/>
+                            <!-- Lace knots -->
+                            <circle cx="190" cy="136" r="3" fill="#222"/>
+                            <circle cx="207" cy="152" r="3" fill="#222"/>
+                        </g>
+
+                        <!-- ─── Swoosh / Logo ─── -->
+                        <path id="part-logo" class="svg-part" d="M170 235 C240 210, 330 285, 470 250 C380 295, 270 265, 170 235 Z" fill="#222" opacity="0.9"/>
+                        <!-- Logo highlight -->
+                        <path d="M185 235 C240 218, 310 270, 420 252" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+
+                        <!-- ─── Custom Name Text ─── -->
+                        <text id="boot-text" x="340" y="230" text-anchor="middle"
+                              font-family="'Outfit', sans-serif" font-weight="900" font-size="28"
+                              fill="#fff" opacity="0.85"
+                              transform="rotate(-12, 340, 230)" letter-spacing="3">PRO</text>
+
+                        <!-- ─── Custom Number ─── -->
+                        <text id="boot-number" x="500" y="310" text-anchor="middle"
+                              font-family="'Outfit', sans-serif" font-weight="900" font-size="36"
+                              fill="#fff" opacity="0.7"
+                              letter-spacing="1">10</text>
+
+                        <!-- ─── Flag / Badge Emoji ─── -->
+                        <text id="boot-flag" x="140" y="280" text-anchor="middle"
+                              font-size="30" opacity="0.85">🇦🇷</text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- ═══ Controls Panel ═══ -->
+            <div class="col-lg-5">
+                <div class="controls-panel">
+                    <div class="price-display" id="dynamic-price">$250.00</div>
+                    <hr class="divider">
+
+                    <!-- COLORS -->
+                    <div class="section-label"><i class="fa-solid fa-palette"></i> Boot Colors</div>
+
+                    <div class="section-label" style="margin-top:0; color:#aaa; font-size:0.7rem;">Upper</div>
+                    <div class="color-row" id="colors-upper">
+                        <div class="color-swatch active" style="background:#ffffff" data-color="#ffffff"></div>
+                        <div class="color-swatch" style="background:#111111" data-color="#111111"></div>
+                        <div class="color-swatch" style="background:#ff3366" data-color="#ff3366"></div>
+                        <div class="color-swatch" style="background:#00d2ff" data-color="#00d2ff"></div>
+                        <div class="color-swatch" style="background:#ffea00" data-color="#ffea00"></div>
+                        <div class="color-swatch" style="background:#38ef7d" data-color="#38ef7d"></div>
+                        <div class="color-swatch" style="background:#9b59b6" data-color="#9b59b6"></div>
+                        <div class="color-swatch" style="background:#e67e22" data-color="#e67e22"></div>
+                    </div>
+
+                    <div class="section-label" style="margin-top:0; color:#aaa; font-size:0.7rem;">Logo / Swoosh</div>
+                    <div class="color-row" id="colors-logo">
+                        <div class="color-swatch active" style="background:#222222" data-color="#222222"></div>
+                        <div class="color-swatch" style="background:#ffffff" data-color="#ffffff"></div>
+                        <div class="color-swatch" style="background:#ffea00" data-color="#ffea00"></div>
+                        <div class="color-swatch" style="background:#00ff88" data-color="#00ff88"></div>
+                        <div class="color-swatch" style="background:#ff3366" data-color="#ff3366"></div>
+                    </div>
+
+                    <div class="section-label" style="margin-top:0; color:#aaa; font-size:0.7rem;">Laces</div>
+                    <div class="color-row" id="colors-laces">
+                        <div class="color-swatch active" style="background:#222222" data-color="#222222"></div>
+                        <div class="color-swatch" style="background:#ffffff" data-color="#ffffff"></div>
+                        <div class="color-swatch" style="background:#ff3366" data-color="#ff3366"></div>
+                        <div class="color-swatch" style="background:#00d2ff" data-color="#00d2ff"></div>
+                    </div>
+
+                    <div class="section-label" style="margin-top:0; color:#aaa; font-size:0.7rem;">Soleplate</div>
+                    <div class="color-row" id="colors-soleplate">
+                        <div class="color-swatch active" style="background:#333333" data-color="#333333"></div>
+                        <div class="color-swatch" style="background:#ffffff" data-color="#ffffff"></div>
+                        <div class="color-swatch" style="background:#00d2ff" data-color="#00d2ff"></div>
+                        <div class="color-swatch" style="background:#ff3366" data-color="#ff3366"></div>
+                        <div class="color-swatch" style="background:#ffea00" data-color="#ffea00"></div>
+                    </div>
+
+                    <div class="section-label" style="margin-top:0; color:#aaa; font-size:0.7rem;">Stud Type</div>
+                    <div class="stud-type-grid" id="stud-type-picker">
+                        <div class="stud-option active" data-type="conical">
+                            <img src="{{ url_for('static', filename='images/studs_tiempo.jpg') }}" alt="Tiempo (Conical)">
+                            <span>Tiempo</span>
+                        </div>
+                        <div class="stud-option" data-type="bladed">
+                            <img src="{{ url_for('static', filename='images/studs_mercurial.jpg') }}" alt="Mercurial (Bladed)">
+                            <span>Mercurial</span>
+                        </div>
+                        <div class="stud-option" data-type="mixed">
+                            <img src="{{ url_for('static', filename='images/studs_copa.jpg') }}" alt="Copa (Mixed)">
+                            <span>Copa</span>
+                        </div>
+                    </div>
+
+                    <hr class="divider">
+
+                    <!-- PERSONALIZATION -->
+                    <div class="section-label"><i class="fa-solid fa-pen-fancy"></i> Personalization</div>
+
+                    <div class="input-row">
+                        <div>
+                            <label style="font-size:0.7rem; color:#777; margin-bottom:4px; display:block;">Your Name (max 8)</label>
+                            <input type="text" class="personalization-input" id="input-name" maxlength="8" value="PRO" placeholder="e.g. MESSI">
+                        </div>
+                        <div>
+                            <label style="font-size:0.7rem; color:#777; margin-bottom:4px; display:block;">Squad Number</label>
+                            <input type="text" class="personalization-input" id="input-number" maxlength="3" value="10" placeholder="e.g. 10">
+                        </div>
+                    </div>
+
+                    <div class="section-label" style="margin-top:0;"><i class="fa-solid fa-flag"></i> Country Flag</div>
+                    <div class="flag-grid" id="flag-grid">
+                        <div class="flag-btn active" data-flag="🇦🇷">🇦🇷</div>
+                        <div class="flag-btn" data-flag="🇧🇷">🇧🇷</div>
+                        <div class="flag-btn" data-flag="🇫🇷">🇫🇷</div>
+                        <div class="flag-btn" data-flag="🇩🇪">🇩🇪</div>
+                        <div class="flag-btn" data-flag="🏴󠁧󠁢󠁥󠁮󠁧󠁿">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+                        <div class="flag-btn" data-flag="🇪🇸">🇪🇸</div>
+                        <div class="flag-btn" data-flag="🇵🇹">🇵🇹</div>
+                        <div class="flag-btn" data-flag="🇮🇹">🇮🇹</div>
+                        <div class="flag-btn" data-flag="🇳🇬">🇳🇬</div>
+                        <div class="flag-btn" data-flag="🇺🇸">🇺🇸</div>
+                        <div class="flag-btn" data-flag="🇯🇵">🇯🇵</div>
+                        <div class="flag-btn" data-flag="🇰🇷">🇰🇷</div>
+                        <div class="flag-btn" data-flag="🇲🇽">🇲🇽</div>
+                        <div class="flag-btn" data-flag="🇳🇱">🇳🇱</div>
+                        <div class="flag-btn" data-flag="🇧🇪">🇧🇪</div>
+                        <div class="flag-btn" data-flag="🇭🇷">🇭🇷</div>
+                        <div class="flag-btn" data-flag="🇵🇰">🇵🇰</div>
+                        <div class="flag-btn" data-flag="🇮🇳">🇮🇳</div>
+                    </div>
+
+                    <div class="section-label"><i class="fa-solid fa-icons"></i> Badge / Icon</div>
+                    <div class="flag-grid" id="icon-grid">
+                        <div class="flag-btn" data-icon="⚽">⚽</div>
+                        <div class="flag-btn" data-icon="🔥">🔥</div>
+                        <div class="flag-btn" data-icon="⭐">⭐</div>
+                        <div class="flag-btn" data-icon="💎">💎</div>
+                        <div class="flag-btn" data-icon="🏆">🏆</div>
+                        <div class="flag-btn" data-icon="⚡">⚡</div>
+                        <div class="flag-btn" data-icon="🦁">🦁</div>
+                        <div class="flag-btn" data-icon="🐉">🐉</div>
+                        <div class="flag-btn" data-icon="👑">👑</div>
+                        <div class="flag-btn" data-icon="🎯">🎯</div>
+                        <div class="flag-btn" data-icon="">None</div>
+                    </div>
+
+                    <hr class="divider">
+
+                    <button class="btn-add-custom" id="add-custom-btn">
+                        <i class="fa-solid fa-cart-arrow-down me-2"></i> Add Design to Cart — $250
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ═══ State ═══
+    const customData = {
+        upper: '#ffffff', logo: '#222222', laces: '#222222', soleplate: '#333333',
+        text: 'PRO', number: '10', flag: '🇦🇷', icon: '', studType: 'conical',
+        price: 250.00
+    };
+
+    // ═══ SVG Refs ═══
+    const svgUpper     = document.getElementById('part-upper');
+    const svgLogo      = document.getElementById('part-logo');
+    const svgLaces     = document.getElementById('part-laces');
+    const svgSoleplate = document.getElementById('part-soleplate');
+    const svgText      = document.getElementById('boot-text');
+    const svgNumber    = document.getElementById('boot-number');
+    const svgFlag      = document.getElementById('boot-flag');
+
+    // ═══ Color Picker Setup ═══
+    function setupColors(groupId, stateKey, element, mode = 'fill') {
+        document.getElementById(groupId).querySelectorAll('.color-swatch').forEach(sw => {
+            sw.addEventListener('click', () => {
+                document.getElementById(groupId).querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                sw.classList.add('active');
+                const c = sw.dataset.color;
+                customData[stateKey] = c;
+
+                if (mode === 'stroke') {
+                    element.querySelectorAll('line').forEach(l => l.style.stroke = c);
+                    element.querySelectorAll('circle').forEach(ci => ci.style.fill = c);
+                } else {
+                    element.style.fill = c;
+                }
+            });
+        });
+    }
+
+    setupColors('colors-upper',    'upper',    svgUpper);
+    setupColors('colors-logo',     'logo',     svgLogo);
+    setupColors('colors-laces',    'laces',    svgLaces, 'stroke');
+    setupColors('colors-soleplate','soleplate', svgSoleplate);
+
+    // ═══ Name Input ═══
+    document.getElementById('input-name').addEventListener('input', e => {
+        const v = e.target.value.toUpperCase();
+        customData.text = v;
+        svgText.textContent = v;
+    });
+
+    // ═══ Number Input ═══
+    document.getElementById('input-number').addEventListener('input', e => {
+        customData.number = e.target.value;
+        svgNumber.textContent = e.target.value;
+    });
+
+    // ═══ Flag Picker ═══
+    document.getElementById('flag-grid').querySelectorAll('.flag-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('flag-grid').querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            customData.flag = btn.dataset.flag;
+            svgFlag.textContent = btn.dataset.flag;
+        });
+    });
+
+    // ═══ Icon / Badge Picker ═══
+    document.getElementById('icon-grid').querySelectorAll('.flag-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('icon-grid').querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            customData.icon = btn.dataset.icon || '';
+            // Place icon near the heel area
+            svgNumber.textContent = customData.icon || customData.number;
+        });
+    });
+
+    // ═══ Stud Type Picker ═══
+    document.getElementById('stud-type-picker').querySelectorAll('.stud-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('stud-type-picker').querySelectorAll('.stud-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            customData.studType = btn.dataset.type;
+            
+            document.getElementById('studs-conical').style.display = 'none';
+            document.getElementById('studs-bladed').style.display = 'none';
+            document.getElementById('studs-mixed').style.display = 'none';
+            
+            document.getElementById('studs-' + btn.dataset.type).style.display = 'block';
+        });
+    });
+
+    // ═══ Add to Cart ═══
+    document.getElementById('add-custom-btn').addEventListener('click', function() {
+        const btn = this;
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Processing...';
+
+        fetch('/api/cart/add_custom', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(customData)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const badge = document.getElementById('cart-badge');
+                if (badge) badge.innerText = data.cart_count;
+                btn.innerHTML = '<i class="fa-solid fa-check me-2"></i> Custom Boot Added!';
+                btn.style.background = 'linear-gradient(135deg, #11998e, #38ef7d)';
+                setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2500);
+            } else {
+                alert('Please log in to add items to your cart.');
+                btn.innerHTML = orig;
+            }
+        })
+        .catch(() => { alert('Connection error. Please try again.'); btn.innerHTML = orig; });
+    });
+</script>
+</body>
+</html>

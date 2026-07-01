@@ -1,0 +1,103 @@
+<footer class="footer mt-5 border-top" style="background-color: var(--bg-darker); border-color: rgba(255,255,255,0.05) !important;">
+    <div class="container py-5 text-white">
+        <div class="row">
+            <!-- Brand & Socials -->
+            <div class="col-md-4 mb-4">
+                <a class="text-decoration-none brand-container d-inline-flex mb-3" href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="logo-img" style="height:45px; border-radius: 4px;">
+                </a>
+                <p class="text-secondary mb-3">Find the perfect boots for your position, style, and game.</p>
+                <div class="d-flex gap-3 mt-3 social-icons-container">
+                    <style>
+                        .social-icons-container a {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            background: rgba(255,255,255,0.05);
+                            color: var(--text-secondary);
+                            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                        }
+                        .social-icons-container a:hover {
+                            transform: translateY(-5px) scale(1.1);
+                        }
+                        .social-icons-container .icon-instagram:hover {
+                            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+                            color: white;
+                            box-shadow: 0 5px 15px rgba(220, 39, 67, 0.4);
+                        }
+                        .social-icons-container .icon-youtube:hover {
+                            background: #ff0000;
+                            color: white;
+                            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+                        }
+                        .social-icons-container .icon-x {
+                            color: white;
+                        }
+                        .social-icons-container .icon-x:hover {
+                            background: #ffffff;
+                            color: #000000;
+                            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+                        }
+                    </style>
+                    <a href="#" class="icon-instagram"><i class="fa-brands fa-instagram fs-5"></i></a>
+                    <a href="https://www.youtube.com/@DEVONTHEBALL32" target="_blank" class="icon-youtube"><i class="fa-brands fa-youtube fs-5"></i></a>
+                    <a href="https://x.com/DevpalsinghB" target="_blank" class="icon-x"><i class="fa-brands fa-x-twitter fs-5"></i></a>
+                </div>
+            </div>
+
+            <!-- Legal & Support -->
+            <div class="col-md-3 mb-4">
+                <h5 class="fw-bold text-white mb-3">Legal & Support</h5>
+                <ul class="list-unstyled" style="line-height: 2;">
+                    <li><a href="{{ url_for('terms') }}" class="text-secondary text-decoration-none">Terms of Service</a></li>
+                    <li><a href="{{ url_for('terms') }}" class="text-secondary text-decoration-none">Privacy Policy</a></li>
+                    <li><a href="{{ url_for('terms') }}" class="text-secondary text-decoration-none">Refund Policy</a></li>
+                    <li><a href="#" class="text-secondary text-decoration-none">Contact Support</a></li>
+                </ul>
+            </div>
+
+            <!-- Feedback -->
+            <div class="col-md-5 mb-4">
+                <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-comment-dots me-2" style="color: var(--accent-red);"></i> Feedback</h5>
+                <form id="footer-feedback-form">
+                    <div class="mb-3">
+                        <textarea class="form-control text-white shadow-none" id="feedbackMessage" rows="3" placeholder="Tell us how we can improve..." style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" required></textarea>
+                    </div>
+                    <button type="submit" class="btn text-white fw-bold w-100" style="background-color: var(--accent-red);">Submit Feedback</button>
+                    <div id="feedback-success" class="text-success mt-2 d-none"><i class="fa-solid fa-check"></i> Thanks for your feedback!</div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Copyright Bottom -->
+        <div class="row mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
+            <div class="col-12 text-center text-secondary small">
+                <p class="mb-1">&copy; 2026 Dev Boot Finder Ltd. All rights reserved.</p>
+                <p class="mb-0">designed by DEV PAL SINGH BHATI</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('footer-feedback-form')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const msg = document.getElementById('feedbackMessage').value;
+        fetch('/api/feedback', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ message: msg })
+        }).then(res => res.json()).then(data => {
+            if(data.success) {
+                document.getElementById('feedbackMessage').value = '';
+                document.getElementById('feedback-success').classList.remove('d-none');
+                setTimeout(() => {
+                    document.getElementById('feedback-success').classList.add('d-none');
+                }, 3000);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Football News - Dev Boot Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Inter', sans-serif; }
+        .news-card { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; transition: transform 0.2s; overflow: hidden; }
+        .news-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .news-img { width: 100%; height: 200px; object-fit: cover; }
+        .text-glow { color: #fff; text-shadow: 0 0 10px #00f0ff; }
+    </style>
+<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}"></head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold"><i class="fa-solid fa-earth-americas text-glow"></i> World Football News</h1>
+        <p class="text-secondary">The latest updates on boot releases, player signings, and football tech.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- News Article 1 -->
+        <div class="col-md-4">
+            <div class="news-card h-100">
+                <div class="bg-secondary news-img d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-shoe-prints fa-3x text-dark"></i>
+                </div>
+                <div class="p-4">
+                    <span class="badge bg-danger mb-2">Breaking</span>
+                    <h5 class="fw-bold text-white">Nike Unveils Next-Gen Phantom GX 2</h5>
+                    <p class="text-secondary small mb-3">2 hours ago</p>
+                    <p class="text-secondary">The highly anticipated Phantom GX 2 features revolutionary Gripknit technology for enhanced touch in all weather conditions.</p>
+                    <a href="#" class="btn btn-outline-light btn-sm mt-2">Read More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Article 2 -->
+        <div class="col-md-4">
+            <div class="news-card h-100">
+                <div class="bg-secondary news-img d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-pen-nib fa-3x text-dark"></i>
+                </div>
+                <div class="p-4">
+                    <span class="badge bg-primary mb-2">Signings</span>
+                    <h5 class="fw-bold text-white">Jude Bellingham Signs Mega Deal with Adidas</h5>
+                    <p class="text-secondary small mb-3">5 hours ago</p>
+                    <p class="text-secondary">Real Madrid star Jude Bellingham officially becomes the face of the new Adidas Predator line in a record-breaking sponsorship deal.</p>
+                    <a href="#" class="btn btn-outline-light btn-sm mt-2">Read More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Article 3 -->
+        <div class="col-md-4">
+            <div class="news-card h-100">
+                <div class="bg-secondary news-img d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-bolt fa-3x text-dark"></i>
+                </div>
+                <div class="p-4">
+                    <span class="badge bg-warning text-dark mb-2">Tech Review</span>
+                    <h5 class="fw-bold text-white">Are Carbon Fiber Plates Cheating?</h5>
+                    <p class="text-secondary small mb-3">1 day ago</p>
+                    <p class="text-secondary">We dive deep into the biomechanics of modern speed boots and how carbon fiber outsoles are increasing sprint speeds by 2%.</p>
+                    <a href="#" class="btn btn-outline-light btn-sm mt-2">Read More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

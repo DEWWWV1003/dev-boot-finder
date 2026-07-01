@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Dev Boot Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Inter', sans-serif; }
+        .cart-card { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; }
+        .cart-img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #30363d; }
+        .btn-glow { background-color: #ff1744; color: #fff; border: none; font-weight: bold; }
+        .btn-glow:hover { background-color: #d60029; box-shadow: 0 0 15px rgba(255, 23, 68, 0.4); color: #fff; }
+    </style>
+<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}"></head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="container py-5">
+    <h2 class="fw-bold text-white mb-4"><i class="fa-solid fa-cart-shopping me-2 text-danger"></i> Your Cart</h2>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            {% if cart_items %}
+                <div class="cart-card p-4 shadow-lg mb-4">
+                    {% for item in cart_items %}
+                    <div class="d-flex align-items-center mb-4 pb-4 border-bottom border-secondary position-relative">
+                        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="cart-img me-4">
+                        <div class="flex-grow-1">
+                            <h5 class="fw-bold text-white mb-1">{{ item.name }}</h5>
+                            <p class="text-secondary mb-0 small">{{ item.brand }} - {{ item.colorway }}</p>
+                            <p class="text-white mt-2 mb-0 fw-bold">${{ "%.2f"|format(item.price) }} <span class="text-secondary fw-normal">x {{ item.quantity }}</span></p>
+                        </div>
+                        <div class="text-end">
+                            <h5 class="fw-bold text-success mb-2">${{ "%.2f"|format(item.subtotal) }}</h5>
+                            <button class="btn btn-sm btn-outline-danger remove-btn" data-id="{{ item.id }}"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="cart-card p-5 text-center shadow-lg mb-4">
+                    <i class="fa-solid fa-box-open fa-4x text-secondary mb-3"></i>
+                    <h4 class="text-white fw-bold">Your cart is empty.</h4>
+                    <p class="text-secondary mb-4">Looks like you haven't added any boots yet.</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-glow px-4 py-2 rounded-pill">Continue Shopping</a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="cart-card p-4 shadow-lg sticky-top" style="top: 100px;">
+                <h5 class="fw-bold text-white mb-4">Order Summary</h5>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary">Subtotal</span>
+                    <span class="text-white fw-bold">${{ "%.2f"|format(total_price) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary">Shipping</span>
+                    <span class="text-success fw-bold">Free</span>
+                </div>
+                <hr class="border-secondary my-3">
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="text-white fs-5 fw-bold">Total</span>
+                    <span class="text-danger fs-5 fw-bold">${{ "%.2f"|format(total_price) }}</span>
+                </div>
+                
+                <a href="{{ url_for('checkout') }}" class="btn btn-glow w-100 py-3 rounded-pill {% if not cart_items %}disabled{% endif %}"><i class="fa-solid fa-lock me-2"></i> Secure Checkout</a>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-secondary small fw-bold mb-3" style="letter-spacing: 1px;">OR EXPRESS CHECKOUT</p>
+                    <div class="d-flex flex-column gap-2">
+                        <!-- Apple Pay -->
+                        <button class="btn btn-dark rounded-pill w-100 position-relative express-btn d-flex justify-content-center align-items-center" style="background-color: #000; color: #fff; height: 45px; border: 1px solid #333;" {% if not cart_items %}disabled{% endif %} onclick="triggerExpress('apple')">
+                            <i class="fa-brands fa-apple fs-5 me-1 pb-1"></i> Pay
+                        </button>
+                        <!-- Google Pay -->
+                        <button class="btn btn-light rounded-pill w-100 position-relative express-btn d-flex justify-content-center align-items-center" style="background-color: #fff; color: #3c4043; height: 45px; border: 1px solid #dadce0;" {% if not cart_items %}disabled{% endif %} onclick="triggerExpress('google')">
+                            <i class="fa-brands fa-google fs-6 me-2"></i> Pay
+                        </button>
+                        <!-- PayPal -->
+                        <button class="btn rounded-pill w-100 position-relative express-btn d-flex justify-content-center align-items-center" style="background-color: #ffc439; color: #003087; height: 45px; border: none; font-weight: 700; font-style: italic;" {% if not cart_items %}disabled{% endif %} onclick="triggerExpress('paypal')">
+                            <i class="fa-brands fa-paypal fs-5 me-2" style="color: #003087;"></i> PayPal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const bootId = e.currentTarget.getAttribute('data-id');
+            fetch('/api/cart/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ boot_id: bootId })
+            }).then(res => res.json()).then(data => {
+                if(data.success) {
+                    window.location.reload();
+                }
+            });
+        });
+    });
+
+    function triggerExpress(provider) {
+        // Find the button that was clicked based on provider
+        let buttons = document.querySelectorAll('.express-btn');
+        let activeBtn = Array.from(buttons).find(b => b.getAttribute('onclick').includes(provider));
+        
+        if(activeBtn) {
+            // Save original HTML
+            let originalHtml = activeBtn.innerHTML;
+            // Set loading state
+            activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+            activeBtn.disabled = true;
+            
+            // Simulate API call to payment provider, then redirect to checkout
+            setTimeout(() => {
+                window.location.href = "{{ url_for('checkout') }}?express=" + provider;
+            }, 1200);
+        }
+    }
+</script>
+</body>
+</html>

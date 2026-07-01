@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Boot Finder | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}"></head>
+<body>
+    <div class="auth-wrapper">
+
+        <!-- Left Panel: Brand + Legends Showcase -->
+        <div class="auth-left">
+            <a class="text-decoration-none brand-container d-inline-flex mb-4" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="logo-img" style="height:60px;">
+            </a>
+            <div class="auth-tagline">
+                <h1>The boots of<br><span class="glow-text">Legends.</span></h1>
+                <p>Join thousands of football enthusiasts discovering elite studs worn by the world's greatest players.</p>
+            </div>
+
+            <!-- Legends Showcase Carousel -->
+            <div class="legends-showcase">
+                <div class="legend-card active" data-index="0">
+                    <div class="legend-boot-img">
+                        <img src="{{ url_for('static', filename='images/boot_nike.png') }}" alt="Nike Mercurial">
+                        <div class="boot-glow nike-glow"></div>
+                    </div>
+                    <div class="legend-info">
+                        <div class="legend-avatar nike-av">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                        </div>
+                        <div>
+                            <span class="legend-name">Kylian Mbappé</span>
+                            <span class="legend-boot-label">Nike Zoom Mercurial Superfly 9</span>
+                            <span class="legend-quote">"Speed is my art."</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend-card" data-index="1">
+                    <div class="legend-boot-img">
+                        <img src="{{ url_for('static', filename='images/boot_adidas.png') }}" alt="Adidas Predator">
+                        <div class="boot-glow adidas-glow"></div>
+                    </div>
+                    <div class="legend-info">
+                        <div class="legend-avatar adidas-av">
+                            <i class="fa-solid fa-crosshairs"></i>
+                        </div>
+                        <div>
+                            <span class="legend-name">Jude Bellingham</span>
+                            <span class="legend-boot-label">Adidas Predator Accuracy+ Elite</span>
+                            <span class="legend-quote">"Control is everything."</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend-card" data-index="2">
+                    <div class="legend-boot-img">
+                        <img src="{{ url_for('static', filename='images/boot_puma.png') }}" alt="Puma Future">
+                        <div class="boot-glow puma-glow"></div>
+                    </div>
+                    <div class="legend-info">
+                        <div class="legend-avatar puma-av">
+                            <i class="fa-solid fa-dharmachakra"></i>
+                        </div>
+                        <div>
+                            <span class="legend-name">Neymar Jr.</span>
+                            <span class="legend-boot-label">Puma Future Ultimate</span>
+                            <span class="legend-quote">"Magic happens on the ball."</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend-card" data-index="3">
+                    <div class="legend-boot-img">
+                        <img src="{{ url_for('static', filename='images/boot_adidas.png') }}" alt="Adidas X">
+                        <div class="boot-glow adidas-glow"></div>
+                    </div>
+                    <div class="legend-info">
+                        <div class="legend-avatar messi-av">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div>
+                            <span class="legend-name">Lionel Messi</span>
+                            <span class="legend-boot-label">Adidas X Crazyfast.1 LFG</span>
+                            <span class="legend-quote">"The best dribbler alive."</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend-card" data-index="4">
+                    <div class="legend-boot-img">
+                        <img src="{{ url_for('static', filename='images/boot_nike.png') }}" alt="Nike Mercurial Women">
+                        <div class="boot-glow nike-glow"></div>
+                    </div>
+                    <div class="legend-info">
+                        <div class="legend-avatar women-av">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <span class="legend-name">Sophia Smith</span>
+                            <span class="legend-boot-label">Nike Zoom Mercurial Superfly 9 Women</span>
+                            <span class="legend-quote">"Unstoppable. Always."</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dots indicator -->
+                <div class="carousel-dots">
+                    <span class="dot active" data-index="0"></span>
+                    <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                    <span class="dot" data-index="3"></span>
+                    <span class="dot" data-index="4"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Login Form -->
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <div class="auth-form-header">
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to your Dev Boot Finder account</p>
+                </div>
+
+                {% if request.args.get('success') %}
+                <div class="auth-alert success-alert">
+                    <i class="fa-solid fa-circle-check"></i>
+                    {{ request.args.get('success') }}
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="auth-alert error-alert">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form class="auth-form" method="POST" action="{{ url_for('login') }}" id="login-form">
+                    <div class="form-group">
+                        <label for="identifier">Username or Email</label>
+                        <div class="input-icon-wrap">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="identifier" name="identifier"
+                                   placeholder="Enter your username or email" required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-icon-wrap">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="password" name="password"
+                                   placeholder="Enter your password" required autocomplete="current-password">
+                            <button type="button" class="toggle-pass" id="toggle-pass-btn" aria-label="Toggle password">
+                                <i class="fa-solid fa-eye" id="eye-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn" id="login-submit-btn">
+                        <span>Sign In</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="auth-divider"><span>or</span></div>
+
+                <div class="auth-alternate">
+                    <p>Don't have an account?</p>
+                    <a href="{{ url_for('signup') }}" class="auth-link-btn">Create Account</a>
+                </div>
+
+                <div class="auth-footer-text">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Your data is secured and never shared.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password visibility toggle
+        const toggleBtn = document.getElementById('toggle-pass-btn');
+        const passInput = document.getElementById('password');
+        const eyeIcon   = document.getElementById('eye-icon');
+
+        toggleBtn.addEventListener('click', () => {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.className = 'fa-solid fa-eye-slash';
+            } else {
+                passInput.type = 'password';
+                eyeIcon.className = 'fa-solid fa-eye';
+            }
+        });
+
+        // Legends auto-carousel
+        const cards = document.querySelectorAll('.legend-card');
+        const dots  = document.querySelectorAll('.dot');
+        let current = 0;
+        let timer;
+
+        function showSlide(idx) {
+            cards.forEach(c => c.classList.remove('active'));
+            dots.forEach(d  => d.classList.remove('active'));
+            cards[idx].classList.add('active');
+            dots[idx].classList.add('active');
+            current = idx;
+        }
+
+        function autoPlay() {
+            timer = setInterval(() => {
+                showSlide((current + 1) % cards.length);
+            }, 3500);
+        }
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                clearInterval(timer);
+                showSlide(parseInt(dot.getAttribute('data-index')));
+                autoPlay();
+            });
+        });
+
+        autoPlay();
+    </script>
+</body>
+</html>

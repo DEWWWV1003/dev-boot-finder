@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBF Admin - Profile</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+    <style>
+        .profile-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media(max-width: 768px) {
+            .profile-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .form-control {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-red);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+        }
+        .checkbox-group input[type="checkbox"] {
+            accent-color: var(--accent-red);
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dash-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="dash-logo">
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('admin_dashboard') }}"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_banking') }}"><i class="fa-solid fa-building-columns"></i> Banking & Orders</a></li>
+                <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i> Boot Search</a></li>
+                <li><a href="{{ url_for('admin_compare') }}"><i class="fa-solid fa-code-compare"></i> Compare</a></li>
+                <li><a href="{{ url_for('admin_wishlist') }}"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+                <li><a href="{{ url_for('admin_users') }}"><i class="fa-solid fa-users"></i> Registered Users</a></li>
+                <li><a href="{{ url_for('admin_fraud') }}"><i class="fa-solid fa-shield-halved"></i> Fraud Detection</a></li>
+                <li><a href="{{ url_for('admin_inventory') }}"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a></li>
+                <li><a href="{{ url_for('admin_marketing') }}"><i class="fa-solid fa-bullhorn"></i> Marketing</a></li>
+                <li><a href="{{ url_for('admin_analytics') }}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+                <li><a href="{{ url_for('admin_support') }}"><i class="fa-solid fa-headset"></i> Support Desk</a></li>
+                <li><a href="{{ url_for('admin_ai') }}"><i class="fa-solid fa-microchip"></i> AI Sizing Engine</a></li>
+
+
+                <li class="active"><a href="{{ url_for('admin_profile') }}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                <li><a href="{{ url_for('admin_logout') }}" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h2>Profile Management</h2>
+                <div class="topbar-right">
+                    <div class="topbar-icons" style="display: flex; align-items: center; gap: 20px; margin-right: 20px;">
+                        <a href="{{ url_for('admin_fraud') }}" style="text-decoration: none;">
+                            <div class="alert-bell" id="alertBell" style="position: relative; color: var(--text-secondary); font-size: 1.2rem;">
+                                <i class="fa-regular fa-bell"></i>
+                                <div class="alert-dot" id="alertDot" style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; display: none;"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="user-profile">
+                        <img src="{{ url_for('static', filename='images/admin_photo.jpg') }}" alt="User">
+                        <span>{{ session.get('admin_username', 'Admin')|upper }}</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-grid" style="display: block;">
+                <div class="dash-card profile-card" style="max-width: 800px; margin: 0 auto; margin-top: 40px;">
+                    <div class="card-header" style="justify-content: center; margin-bottom: 30px;">
+                        <img src="{{ url_for('static', filename='images/admin_photo.jpg') }}" alt="Admin Avatar" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent-red); object-fit: cover; box-shadow: 0 8px 24px rgba(211, 47, 47, 0.3);">
+                    </div>
+                    
+                    {% if message %}
+                    <div style="background-color: rgba(46, 125, 50, 0.2); color: #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #4caf50;">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('admin_profile') }}" style="display: flex; flex-direction: column; gap: 25px;">
+                        
+                        <div class="profile-form-grid">
+                            <!-- Column 1 -->
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" name="username" class="form-control" value="{{ admin.username }}" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" name="fullname" class="form-control" value="DBF SuperAdmin" placeholder="Your Full Name">
+                            </div>
+
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" name="password" class="form-control" placeholder="Leave blank to keep current">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Admin Role</label>
+                                <select name="role" class="form-control">
+                                    <option value="superadmin" selected>Super Admin</option>
+                                    <option value="editor">Content Editor</option>
+                                    <option value="support">Customer Support</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Preferences Section -->
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                            <h4 style="color: white; margin-bottom: 15px; font-weight: 500;">Security & Preferences</h4>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="tfa" name="tfa" checked>
+                                <label for="tfa" style="color: var(--text-primary); cursor: pointer;">Enable Two-Factor Authentication (2FA)</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="email_notifs" name="email_notifs" checked>
+                                <label for="email_notifs" style="color: var(--text-primary); cursor: pointer;">Receive email notifications for new orders</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="system_alerts" name="system_alerts">
+                                <label for="system_alerts" style="color: var(--text-primary); cursor: pointer;">Receive system alert digests weekly</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-action" style="justify-content: center; margin-top: 10px; padding: 12px; font-size: 16px;">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

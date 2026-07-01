@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Users - DBF Admin</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+    <style>
+        .users-table-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .users-table th, .users-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .users-table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        
+        .users-table tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-red), #b71c1c);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+        
+        .badge-position {
+            background: rgba(211, 47, 47, 0.1);
+            color: var(--accent-red);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(211, 47, 47, 0.1);
+            color: var(--accent-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .metric-info h4 {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .metric-info h2 {
+            margin: 5px 0 0 0;
+            color: var(--text-primary);
+            font-size: 1.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dash-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="dash-logo">
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('admin_dashboard') }}"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_banking') }}"><i class="fa-solid fa-building-columns"></i> Banking & Orders</a></li>
+                <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i> Boot Search</a></li>
+                <li><a href="{{ url_for('admin_compare') }}"><i class="fa-solid fa-code-compare"></i> Compare</a></li>
+                <li><a href="{{ url_for('admin_wishlist') }}"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+                <li class="active"><a href="{{ url_for('admin_users') }}"><i class="fa-solid fa-users"></i> Registered Users</a></li>
+                <li><a href="{{ url_for('admin_fraud') }}"><i class="fa-solid fa-shield-halved"></i> Fraud Detection</a></li>
+                <li><a href="{{ url_for('admin_inventory') }}"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a></li>
+                <li><a href="{{ url_for('admin_marketing') }}"><i class="fa-solid fa-bullhorn"></i> Marketing</a></li>
+                <li><a href="{{ url_for('admin_analytics') }}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+                <li><a href="{{ url_for('admin_support') }}"><i class="fa-solid fa-headset"></i> Support Desk</a></li>
+                <li><a href="{{ url_for('admin_ai') }}"><i class="fa-solid fa-microchip"></i> AI Sizing Engine</a></li>
+
+
+                <li><a href="{{ url_for('admin_profile') }}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                <li><a href="{{ url_for('admin_logout') }}" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h2>Users Management</h2>
+                <div class="topbar-right">
+                    <div class="user-profile">
+                        <img src="{{ url_for('static', filename='images/admin_photo.jpg') }}" alt="User">
+                        <span>{{ session.get('admin_username', 'Admin')|upper }}</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="metric-info">
+                        <h4>Total Registered</h4>
+                        <h2>{{ total_users }}</h2>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(46, 125, 50, 0.1); color: #4caf50;"><i class="fa-solid fa-user-check"></i></div>
+                    <div class="metric-info">
+                        <h4>Active Profiles</h4>
+                        <h2>{{ total_users }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="users-table-container">
+                <h3 style="margin-top: 0; margin-bottom: 20px;">User Profiles Database</h3>
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                            <th>Favorite Position</th>
+                            <th>Join Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <div class="user-avatar">{{ u['username'][0]|upper }}</div>
+                                    <span style="font-weight: 600;">{{ u['username'] }}</span>
+                                </div>
+                            </td>
+                            <td>{{ u['full_name'] if u['full_name'] else '<span class="text-secondary font-italic">Not provided</span>'|safe }}</td>
+                            <td>{{ u['email'] }}</td>
+                            <td>
+                                {% if u['favorite_position'] %}
+                                    <span class="badge-position">{{ u['favorite_position'] }}</span>
+                                {% else %}
+                                    <span class="text-secondary">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-secondary">{{ u['created_at'].split(' ')[0] if u['created_at'] else 'Unknown' }}</td>
+                            <td>
+                                <button style="background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Promote</button>
+                                <button style="background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Ban</button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center" style="padding: 40px;">No registered users found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking & Orders - DBF Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+    <style>
+        .banking-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .metric-icon {
+            font-size: 2rem;
+            color: var(--accent-red);
+            background: rgba(211, 47, 47, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .metric-content h4 {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        .metric-content h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        /* Order Ledger Table */
+        .ledger-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .ledger-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .ledger-table th, .ledger-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .ledger-table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        .ledger-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .status-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-placed { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .status-shipped { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+        .status-delivered { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .status-refunded { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        
+        .status-select {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.3rem;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+        .status-select:focus { border-color: var(--accent-red); }
+        .status-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        
+        .order-items-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .order-items-list li {
+            margin-bottom: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dash-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="dash-logo">
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('admin_dashboard') }}"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li class="active"><a href="{{ url_for('admin_banking') }}"><i class="fa-solid fa-building-columns"></i> Banking & Orders</a></li>
+                <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i> Boot Search</a></li>
+                <li><a href="{{ url_for('admin_compare') }}"><i class="fa-solid fa-code-compare"></i> Compare</a></li>
+                <li><a href="{{ url_for('admin_wishlist') }}"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+                <li><a href="{{ url_for('admin_users') }}"><i class="fa-solid fa-users"></i> Registered Users</a></li>
+                <li><a href="{{ url_for('admin_fraud') }}"><i class="fa-solid fa-shield-halved"></i> Fraud Detection</a></li>
+                <li><a href="{{ url_for('admin_inventory') }}"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a></li>
+                <li><a href="{{ url_for('admin_marketing') }}"><i class="fa-solid fa-bullhorn"></i> Marketing</a></li>
+                <li><a href="{{ url_for('admin_analytics') }}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+                <li><a href="{{ url_for('admin_support') }}"><i class="fa-solid fa-headset"></i> Support Desk</a></li>
+                <li><a href="{{ url_for('admin_ai') }}"><i class="fa-solid fa-microchip"></i> AI Sizing Engine</a></li>
+
+
+                <li><a href="{{ url_for('admin_profile') }}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                <li><a href="{{ url_for('admin_logout') }}" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h2>Banking & Orders</h2>
+                <div class="topbar-right">
+                    <div class="topbar-icons" style="display: flex; align-items: center; gap: 20px; margin-right: 20px;">
+                        <a href="{{ url_for('admin_fraud') }}" style="text-decoration: none;">
+                            <div class="alert-bell" id="alertBell" style="position: relative; color: var(--text-secondary); font-size: 1.2rem;">
+                                <i class="fa-regular fa-bell"></i>
+                                <div class="alert-dot" id="alertDot" style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; display: none;"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="user-profile">
+                        <img src="{{ url_for('static', filename='images/admin_photo.jpg') }}" alt="User">
+                        <span>{{ session.get('admin_username', 'Admin')|upper }}</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-grid" style="display: block;">
+                
+                <!-- Financial Metrics -->
+                <div class="banking-metrics">
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="metric-content">
+                            <h4>Total Revenue</h4>
+                            <h2>${{ "%.2f"|format(total_revenue) }}</h2>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="color: #f1c40f; background: rgba(241, 196, 15, 0.1);"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div class="metric-content">
+                            <h4>Pending Orders Value</h4>
+                            <h2>${{ "%.2f"|format(total_pending) }}</h2>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="color: #3498db; background: rgba(52, 152, 219, 0.1);"><i class="fa-solid fa-box-open"></i></div>
+                        <div class="metric-content">
+                            <h4>Total Orders</h4>
+                            <h2>{{ total_orders }}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Ledger Table -->
+                <div class="ledger-container">
+                    <h3 style="margin-bottom: 1.5rem;">Transaction Ledger</h3>
+                    
+                    {% if orders %}
+                    <div style="overflow-x: auto;">
+                        <table class="ledger-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total Price</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td><strong>#{{ order.id }}</strong></td>
+                                    <td>{{ order.timestamp.split(' ')[0] if order.timestamp else 'N/A' }}</td>
+                                    <td>
+                                        <div>{{ order.username or 'Guest' }}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-secondary);">{{ order.email or 'N/A' }}</div>
+                                    </td>
+                                    <td>
+                                        <ul class="order-items-list">
+                                            {% for item in order['items'] %}
+                                                <li>{{ item.quantity }}x {{ item.boot_name }} (${{ "%.2f"|format(item.price_at_purchase) }})</li>
+                                            {% else %}
+                                                <li><em>No item details</em></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td style="font-weight: 600;">${{ "%.2f"|format(order.total_price) }}</td>
+                                    <td>
+                                        {% set status_class = 'status-placed' %}
+                                        {% if order.status == 'Shipped' %}{% set status_class = 'status-shipped' %}
+                                        {% elif order.status == 'Delivered' %}{% set status_class = 'status-delivered' %}
+                                        {% elif order.status == 'Refunded' %}{% set status_class = 'status-refunded' %}
+                                        {% endif %}
+                                        <span class="status-badge {{ status_class }}" id="status-badge-{{ order.id }}">{{ order.status }}</span>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px; flex-direction: column;">
+                                            <select class="status-select" onchange="updateOrderStatus({{ order.id }}, this.value)">
+                                                <option value="Placed" {% if order.status == 'Placed' %}selected{% endif %}>Placed</option>
+                                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="Refunded" {% if order.status == 'Refunded' %}selected{% endif %}>Refunded</option>
+                                            </select>
+                                            <button onclick="openOrderModal({{ order.id }}, '{{ order.username or 'Guest' }}', '{{ order.email }}', '{{ order.total_price }}', '{{ order.status }}')" style="background: rgba(0, 229, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No transactions found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--card-bg); border: 1px solid var(--border-color); width: 100%; max-width: 600px; border-radius: 12px; padding: 30px; position: relative;">
+            <button onclick="closeOrderModal()" style="position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            <h2 style="margin-top: 0; margin-bottom: 20px; color: var(--text-primary);">Order Details <span id="modalOrderId" style="color: var(--accent-blue);"></span></h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+                    <h4 style="color: var(--text-secondary); margin-top: 0; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase;"><i class="fa-solid fa-location-dot"></i> Shipping Address</h4>
+                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.5;" id="modalCustomerName">John Doe</p>
+                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.5; color: var(--text-secondary);">123 Pitch Ave, Suite 4<br>London, UK W1D 3QU</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+                    <h4 style="color: var(--text-secondary); margin-top: 0; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase;"><i class="fa-solid fa-credit-card"></i> Payment Method</h4>
+                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.5;"><i class="fa-brands fa-cc-visa" style="color: #1a1f71; font-size: 1.2rem; vertical-align: middle;"></i> Visa ending in <strong>4242</strong></p>
+                    <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--accent-green);"><i class="fa-solid fa-check-circle"></i> Payment Verified</p>
+                </div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="color: var(--text-secondary); margin-top: 0; margin-bottom: 15px; font-size: 0.9rem; text-transform: uppercase;"><i class="fa-solid fa-timeline"></i> Order Timeline</h4>
+                <div style="display: flex; justify-content: space-between; position: relative;">
+                    <div style="position: absolute; top: 10px; left: 20px; right: 20px; height: 2px; background: var(--border-color); z-index: 1;"></div>
+                    <div style="text-align: center; position: relative; z-index: 2; width: 33%;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: var(--accent-green); margin: 0 auto 5px;"></div>
+                        <span style="font-size: 0.8rem;">Placed</span>
+                    </div>
+                    <div style="text-align: center; position: relative; z-index: 2; width: 33%;">
+                        <div id="timelineShipped" style="width: 20px; height: 20px; border-radius: 50%; background: var(--border-color); margin: 0 auto 5px;"></div>
+                        <span style="font-size: 0.8rem;">Shipped</span>
+                    </div>
+                    <div style="text-align: center; position: relative; z-index: 2; width: 33%;">
+                        <div id="timelineDelivered" style="width: 20px; height: 20px; border-radius: 50%; background: var(--border-color); margin: 0 auto 5px;"></div>
+                        <span style="font-size: 0.8rem;">Delivered</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script>
+        function openOrderModal(id, name, email, price, status) {
+            document.getElementById('modalOrderId').innerText = '#' + id;
+            document.getElementById('modalCustomerName').innerText = name;
+            
+            // update timeline
+            document.getElementById('timelineShipped').style.background = (status === 'Shipped' || status === 'Delivered') ? 'var(--accent-green)' : 'var(--border-color)';
+            document.getElementById('timelineDelivered').style.background = (status === 'Delivered') ? 'var(--accent-green)' : 'var(--border-color)';
+            
+            document.getElementById('orderModal').style.display = 'flex';
+        }
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            fetch('/admin/banking/update_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ order_id: orderId, status: newStatus })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    const badge = document.getElementById('status-badge-' + orderId);
+                    badge.textContent = newStatus;
+                    badge.className = 'status-badge';
+                    if(newStatus === 'Placed') badge.classList.add('status-placed');
+                    else if(newStatus === 'Shipped') badge.classList.add('status-shipped');
+                    else if(newStatus === 'Delivered') badge.classList.add('status-delivered');
+                    else if(newStatus === 'Refunded') badge.classList.add('status-refunded');
+                    
+                    // Optional: reload page to update financial metrics correctly
+                    // window.location.reload();
+                } else {
+                    alert('Error updating status: ' + data.error);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+            })
+            .catch(error => console.error('Error updating order:', error));
+        }
+
+        fetch('/api/admin/alerts')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    document.getElementById('alertDot').style.display = 'block';
+                }
+            });
+    </script>
+</body>
+</html>

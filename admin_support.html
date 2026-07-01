@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBF Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dash-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="dash-logo">
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="{{ url_for('admin_dashboard') }}"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_banking') }}"><i class="fa-solid fa-building-columns"></i> Banking & Orders</a></li>
+                <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i> Boot Search</a></li>
+                <li><a href="{{ url_for('admin_compare') }}"><i class="fa-solid fa-code-compare"></i> Compare</a></li>
+                <li><a href="{{ url_for('admin_wishlist') }}"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+                <li><a href="#"><i class="fa-solid fa-tag"></i> Deals</a></li>
+                <li><a href="{{ url_for('admin_users') }}"><i class="fa-solid fa-users"></i> Registered Users</a></li>
+                <li><a href="{{ url_for('admin_fraud') }}"><i class="fa-solid fa-shield-halved"></i> Fraud Detection</a></li>
+                <li><a href="{{ url_for('admin_inventory') }}"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a></li>
+                <li><a href="{{ url_for('admin_marketing') }}"><i class="fa-solid fa-bullhorn"></i> Marketing</a></li>
+                <li><a href="{{ url_for('admin_analytics') }}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+                <li><a href="{{ url_for('admin_support') }}"><i class="fa-solid fa-headset"></i> Support Desk</a></li>
+                <li><a href="{{ url_for('admin_ai') }}"><i class="fa-solid fa-microchip"></i> AI Sizing Engine</a></li>
+
+
+                <li><a href="{{ url_for('admin_profile') }}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                <li><a href="{{ url_for('admin_logout') }}" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h2>Support Desk</h2>
+                <div class="topbar-right">
+                    <div class="topbar-icons" style="display: flex; align-items: center; gap: 20px; margin-right: 20px;">
+                        <a href="{{ url_for('admin_fraud') }}" style="text-decoration: none;">
+                            <div class="alert-bell" id="alertBell" style="position: relative; color: var(--text-secondary); font-size: 1.2rem;">
+                                <i class="fa-regular fa-bell"></i>
+                                <div class="alert-dot" id="alertDot" style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; display: none;"></div>
+                            </div>
+                        </a>
+                        <div class="admin-profile" style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 35px; height: 35px; background: var(--accent-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+                                A
+                            </div>
+                            <span>Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="dash-content">
+                <div style="display: flex; height: 650px; gap: 20px;">
+                    <!-- Sidebar Ticket List -->
+                    <div style="width: 320px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; display: flex; flex-direction: column;">
+                        <div style="padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                            <h4 style="margin: 0; color: white;">Active Tickets <span id="activeTicketCount" style="background: var(--accent-pink); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; margin-left: 10px;">0</span></h4>
+                        </div>
+                        <div id="ticketList" style="flex-grow: 1; overflow-y: auto;">
+                            <!-- Tickets injected via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Chat Window -->
+                    <div style="flex-grow: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; display: flex; flex-direction: column; position: relative;">
+                        <!-- Header -->
+                        <div id="chatHeader" style="padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; display: none;">
+                            <div>
+                                <h4 id="chatCustomerName" style="margin: 0; color: white; display: flex; align-items: center; gap: 10px;">Name <span id="chatPriorityBadge"></span></h4>
+                                <small id="chatCustomerMeta" style="color: var(--text-secondary);">email@domain.com | Order #XXX</small>
+                            </div>
+                            <button onclick="resolveCurrentTicket()" style="background: rgba(181, 55, 242, 0.1); border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;"><i class="fa-solid fa-check"></i> Resolve Ticket</button>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="emptyChatState" style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-secondary);">
+                            <i class="fa-regular fa-comments" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                            <h3>Select a ticket to begin</h3>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div id="chatMessages" style="flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; display: none;">
+                            <!-- Messages injected via JS -->
+                        </div>
+
+                        <!-- Chat Input -->
+                        <div id="chatInputArea" style="padding: 15px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; display: none; align-items: center;">
+                            <input type="text" id="chatInput" placeholder="Type your response... (Press Enter to send)" style="flex-grow: 1; background: #000; border: 1px solid var(--border-color); color: white; padding: 12px 20px; border-radius: 25px; outline: none;">
+                            <button onclick="sendChatMessage()" style="background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; transition: transform 0.2s;"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</main>
+    </div>
+
+    <script>
+        // Mock State
+        let tickets = [
+            {
+                id: 1,
+                name: 'John Doe',
+                email: 'john.doe@example.com',
+                order: 'ORD-442',
+                priority: 'High',
+                time: '10m ago',
+                status: 'open',
+                messages: [
+                    { sender: 'user', text: 'Hi, my tracking says delivered but I haven\'t received my boots yet.', time: '10:24 AM' }
+                ]
+            },
+            {
+                id: 2,
+                name: 'Jane Smith',
+                email: 'jane.smith@example.com',
+                order: 'ORD-891',
+                priority: 'Medium',
+                time: '1h ago',
+                status: 'open',
+                messages: [
+                    { sender: 'user', text: 'Hello, what is your return policy for indoor boots?', time: '09:15 AM' },
+                    { sender: 'admin', text: 'Hi Jane, we offer a 30-day return window for unworn indoor boots. Do you need a return label?', time: '09:30 AM' },
+                    { sender: 'user', text: 'Yes please, that would be great.', time: '09:45 AM' }
+                ]
+            },
+            {
+                id: 3,
+                name: 'Mike Ross',
+                email: 'mike.r@example.com',
+                order: 'ORD-112',
+                priority: 'Low',
+                time: '2h ago',
+                status: 'open',
+                messages: [
+                    { sender: 'user', text: 'Are the Adidas Copa Mundials true to size?', time: '08:00 AM' }
+                ]
+            }
+        ];
+
+        let activeTicketId = null;
+
+        function renderTicketList() {
+            const list = document.getElementById('ticketList');
+            list.innerHTML = '';
+            let count = 0;
+
+            tickets.forEach(ticket => {
+                if(ticket.status === 'resolved') return;
+                count++;
+                
+                const isActive = ticket.id === activeTicketId;
+                const lastMsg = ticket.messages[ticket.messages.length - 1].text;
+                
+                let borderStyle = isActive ? 'border-left: 3px solid var(--accent-pink); background: rgba(255, 255, 255, 0.05);' : 'border-left: 3px solid transparent; hover: background: rgba(0,0,0,0.5);';
+
+                list.innerHTML += `
+                    <div onclick="selectTicket(${ticket.id})" style="padding: 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; ${borderStyle}">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center;">
+                            <strong style="color: ${isActive ? 'white' : 'var(--text-secondary)'};">${ticket.name}</strong>
+                            <small style="color: var(--text-secondary); font-size: 0.75rem;">${ticket.time}</small>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${lastMsg}</div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('activeTicketCount').innerText = count;
+            
+            if(count === 0) {
+                list.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-secondary);">No open tickets! 🎉</div>';
+            }
+        }
+
+        function selectTicket(id) {
+            activeTicketId = id;
+            renderTicketList();
+            
+            const ticket = tickets.find(t => t.id === id);
+            
+            document.getElementById('emptyChatState').style.display = 'none';
+            document.getElementById('chatHeader').style.display = 'flex';
+            document.getElementById('chatMessages').style.display = 'flex';
+            document.getElementById('chatInputArea').style.display = 'flex';
+            
+            document.getElementById('chatCustomerName').innerHTML = `${ticket.name} <span style="background: ${ticket.priority === 'High' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.1)'}; color: ${ticket.priority === 'High' ? '#ef4444' : '#fff'}; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase;">${ticket.priority} Priority</span>`;
+            document.getElementById('chatCustomerMeta').innerText = `${ticket.email} | ${ticket.order}`;
+            
+            renderMessages();
+            document.getElementById('chatInput').focus();
+        }
+
+        function renderMessages() {
+            if(!activeTicketId) return;
+            const ticket = tickets.find(t => t.id === activeTicketId);
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = '';
+            
+            ticket.messages.forEach(msg => {
+                if(msg.sender === 'user') {
+                    container.innerHTML += `
+                        <div style="align-self: flex-start; max-width: 70%;">
+                            <div style="background: rgba(255,255,255,0.05); padding: 12px 18px; border-radius: 15px 15px 15px 0; color: white; line-height: 1.5;">
+                                ${msg.text}
+                            </div>
+                            <small style="color: var(--text-secondary); margin-top: 5px; display: block;">${msg.time}</small>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML += `
+                        <div style="align-self: flex-end; max-width: 70%; text-align: right;">
+                            <div style="background: linear-gradient(135deg, rgba(181, 55, 242, 0.2), rgba(255, 0, 127, 0.2)); border: 1px solid rgba(181, 55, 242, 0.3); padding: 12px 18px; border-radius: 15px 15px 0 15px; color: white; line-height: 1.5; text-align: left;">
+                                ${msg.text}
+                            </div>
+                            <small style="color: var(--text-secondary); margin-top: 5px; display: block; text-align: right;"><i class="fa-solid fa-check-double" style="color: var(--accent-blue);"></i> Admin • ${msg.time}</small>
+                        </div>
+                    `;
+                }
+            });
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if(!text || !activeTicketId) return;
+            
+            const ticket = tickets.find(t => t.id === activeTicketId);
+            
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            const timeStr = hours + ':' + minutes + ' ' + ampm;
+            
+            ticket.messages.push({
+                sender: 'admin',
+                text: text,
+                time: timeStr
+            });
+            
+            input.value = '';
+            renderMessages();
+            renderTicketList();
+        }
+        
+        function resolveCurrentTicket() {
+            if(!activeTicketId) return;
+            const ticket = tickets.find(t => t.id === activeTicketId);
+            ticket.status = 'resolved';
+            
+            activeTicketId = null;
+            
+            document.getElementById('emptyChatState').style.display = 'flex';
+            document.getElementById('chatHeader').style.display = 'none';
+            document.getElementById('chatMessages').style.display = 'none';
+            document.getElementById('chatInputArea').style.display = 'none';
+            
+            renderTicketList();
+            alert('Ticket Resolved Successfully!');
+        }
+
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        // Initialize
+        renderTicketList();
+        
+        fetch('/api/admin/alerts')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    document.getElementById('alertDot').style.display = 'block';
+                }
+            });
+    </script>
+</body>
+</html>

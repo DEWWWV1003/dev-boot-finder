@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBF Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dash-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='images/dbf_logo.jpg') }}" alt="DBF Logo" class="dash-logo">
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="{{ url_for('admin_dashboard') }}"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_banking') }}"><i class="fa-solid fa-building-columns"></i> Banking & Orders</a></li>
+                <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i> Boot Search</a></li>
+                <li><a href="{{ url_for('admin_compare') }}"><i class="fa-solid fa-code-compare"></i> Compare</a></li>
+                <li><a href="{{ url_for('admin_wishlist') }}"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+                <li><a href="#"><i class="fa-solid fa-tag"></i> Deals</a></li>
+                <li><a href="{{ url_for('admin_users') }}"><i class="fa-solid fa-users"></i> Registered Users</a></li>
+                <li><a href="{{ url_for('admin_fraud') }}"><i class="fa-solid fa-shield-halved"></i> Fraud Detection</a></li>
+                <li><a href="{{ url_for('admin_inventory') }}"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a></li>
+                <li><a href="{{ url_for('admin_marketing') }}"><i class="fa-solid fa-bullhorn"></i> Marketing</a></li>
+                <li><a href="{{ url_for('admin_analytics') }}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+                <li><a href="{{ url_for('admin_support') }}"><i class="fa-solid fa-headset"></i> Support Desk</a></li>
+                <li><a href="{{ url_for('admin_ai') }}"><i class="fa-solid fa-microchip"></i> AI Sizing Engine</a></li>
+
+
+                <li><a href="{{ url_for('admin_profile') }}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                <li><a href="{{ url_for('admin_logout') }}" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h2>Overview Dashboard</h2>
+                <div class="topbar-right">
+                    <div class="topbar-icons" style="display: flex; align-items: center; gap: 20px; margin-right: 20px;">
+                        <a href="{{ url_for('admin_fraud') }}" style="text-decoration: none;">
+                            <div class="alert-bell" id="alertBell" style="position: relative; color: var(--text-secondary); font-size: 1.2rem;">
+                                <i class="fa-regular fa-bell"></i>
+                                <div class="alert-dot" id="alertDot" style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; display: none;"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="user-profile">
+                        <img src="{{ url_for('static', filename='images/admin_photo.jpg') }}" alt="User">
+                        <span>{{ session.get('admin_username', 'Admin')|upper }}</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Grid Layout -->
+            <div class="dashboard-grid">
+                <!-- Performance Overview -->
+                <div class="dash-card performance-card">
+                    <div class="card-header">
+                        <h3>Performance Overview</h3>
+                        <select class="dash-select">
+                            <option>30 Days</option>
+                        </select>
+                    </div>
+                    <div class="chart-legend">
+                        <span class="dot-legend visits"></span> Site Visits
+                        <span class="dot-legend searches"></span> Searches
+                        <span class="dot-legend conversions"></span> Lead Conversions
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dash-card actions-card">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="btn-action" onclick="window.location.href='{{ url_for('admin_compare') }}'"><i class="fa-solid fa-code-compare"></i> Compare Boots</button>
+                        <button class="btn-action" onclick="window.location.href='{{ url_for('admin_fraud') }}'"><i class="fa-regular fa-bell"></i> Create Alert</button>
+                        <button class="btn-action" onclick="window.location.href='{{ url_for('admin_wishlist') }}'"><i class="fa-regular fa-bookmark"></i> View Saved</button>
+                        <button class="btn-action" onclick="window.location.href='http://localhost:5000/position-guide'"><i class="fa-solid fa-pen-to-square"></i> Expert Review</button>
+                    </div>
+                </div>
+
+                <!-- Current Trends -->
+                <div class="dash-card trends-card">
+                    <div class="card-header">
+                        <h3>Current Trends</h3>
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </div>
+                    <div class="trends-content">
+                        <h2 class="trend-text red-text">Red Boots</h2>
+                        <h2 class="trend-text red-text">FIRM GROUND</h2>
+                        <h2 class="trend-text white-text">Lightweight</h2>
+                    </div>
+                </div>
+
+                <!-- Top Boot Models -->
+                <div class="dash-card models-card">
+                    <div class="card-header">
+                        <h3>Top Boot Models</h3>
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </div>
+                    <div class="models-grid">
+                        {% for boot in top_boots %}
+                        <div class="model-item">
+                            <img src="{{ boot.image_url }}" alt="{{ boot.brand }}">
+                            <div class="model-info">
+                                <h4>{{ boot.name }}</h4>
+                                <div class="stars">
+                                    {% for _ in range(boot.rating|int) %}
+                                    <i class="fa-solid fa-star"></i>
+                                    {% endfor %}
+                                    {% if boot.rating % 1 != 0 %}
+                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                    {% endif %}
+                                </div>
+                                <span class="search-count">{{ boot.price }} USD</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- User Feedback -->
+                <div class="dash-card feedback-card">
+                    <div class="card-header">
+                        <h3>User Feedback</h3>
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </div>
+                    <div class="feedback-list">
+                        {% for fb in feedbacks %}
+                        <div class="feedback-item">
+                            <img src="https://ui-avatars.com/api/?name=User+{{ fb.user_id }}&background=random" alt="User">
+                            <div class="fb-content">
+                                <div class="fb-top">
+                                    <span class="fb-name">User #{{ fb.user_id }}</span>
+                                </div>
+                                <p>{{ fb.message }}</p>
+                                <p style="font-size:9px; color:#666;">{{ fb.timestamp }}</p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="feedback-item">
+                            <div class="fb-content">
+                                <p>No feedback yet.</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Recent Deals -->
+                <div class="dash-card deals-card">
+                    <div class="card-header">
+                        <h3>Recent Deals</h3>
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </div>
+                    <div class="deals-list">
+                        <div class="deal-item">
+                            <div class="deal-info">
+                                <div class="deal-line"></div>
+                                <div>
+                                    <h4>Limited Offer</h4>
+                                    <span>Time-limited: 20 days</span>
+                                </div>
+                            </div>
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div class="deal-item">
+                            <div class="deal-info">
+                                <div class="deal-line"></div>
+                                <div>
+                                    <h4>Stand Alert</h4>
+                                    <span>Time-limited: 17 days</span>
+                                </div>
+                            </div>
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div class="deal-item">
+                            <div class="deal-info">
+                                <div class="deal-line"></div>
+                                <div>
+                                    <h4>Tomon Devrate</h4>
+                                    <span>Time-limited: 27 days</span>
+                                </div>
+                            </div>
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div class="deal-item">
+                            <div class="deal-info">
+                                <div class="deal-line"></div>
+                                <div>
+                                    <h4>Saved Alert</h4>
+                                    <span>Time-limited: 27 days</span>
+                                </div>
+                            </div>
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart Script -->
+    <script>
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        
+        let gradientVisits = ctx.createLinearGradient(0, 0, 0, 300);
+        gradientVisits.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+        gradientVisits.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        let gradientConversions = ctx.createLinearGradient(0, 0, 0, 300);
+        gradientConversions.addColorStop(0, 'rgba(220, 38, 38, 0.4)');
+        gradientConversions.addColorStop(1, 'rgba(220, 38, 38, 0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['0', '4', '8', '12', '16', '20', '24', '27', '30'],
+                datasets: [
+                    {
+                        label: 'Site Visits',
+                        data: [40, 75, 70, 150, 110, 130, 100, 140, 100],
+                        borderColor: '#ffffff',
+                        backgroundColor: gradientVisits,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Lead Conversions',
+                        data: [30, 50, 40, 90, 75, 110, 80, 120, 140],
+                        borderColor: '#dc2626', // Red
+                        backgroundColor: gradientConversions,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#dc2626',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1a1d24',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#30363d',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: true,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 200,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#888', stepSize: 50 }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#888' }
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+            }
+        });
+        
+        fetch('/api/admin/alerts')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    document.getElementById('alertDot').style.display = 'block';
+                }
+            });
+    </script>
+</body>
+</html>

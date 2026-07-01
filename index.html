@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEV BOOT FINDER | FOR YOUR POSITION, STYLE, AND GAME.</title>
+    <!-- Google Fonts: Outfit for heading/UI, Inter for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/vintage_indoor.css') }}">
+<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}"></head>
+<body>
+
+    <!-- Bootstrap Nav Bar -->
+    {% include 'navbar.html' %}
+
+    <!-- Immersive Split Hero Section -->
+    <section class="hero-premium">
+        <div class="hero-premium-content">
+            <span class="hero-tagline"><i class="fa-solid fa-bolt" style="color: var(--accent-red);"></i> FORGE YOUR LEGACY</span>
+            <h1>ELEVATE YOUR <br><span style="color: var(--accent-red);">GAMEPLAY.</span></h1>
+            <p>Discover the finest selection of elite football boots. Precision engineered for your position, style, and the exact surface you dominate.</p>
+            <div class="hero-actions" style="justify-content: flex-start; margin-top: 2rem;">
+                <a href="#catalog-section" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 4px;">Explore Collection</a>
+                <a href="#finder-section" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 4px; border-color: rgba(255,255,255,0.2);">Boot Finder</a>
+            </div>
+        </div>
+        <div class="hero-premium-image">
+            <img src="{{ url_for('static', filename='images/concept_studs_adidas.jpg') }}" alt="Adidas Concept Studs" class="floating-boot" style="border-radius: 12px; filter: drop-shadow(0 20px 40px rgba(211, 47, 47, 0.4));">
+            <div class="hero-glow-blob"></div>
+        </div>
+    </section>
+
+    <!-- Boot Finder Wizard Section -->
+    <section id="finder-section" class="finder-section py-5">
+        <div class="container">
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-8 text-center text-lg-start mb-4 mb-lg-0">
+                    <h2 class="fw-bold"><i class="fa-solid fa-wand-magic-sparkles text-glow-blue"></i> BOOT FINDER</h2>
+                    <p class="text-secondary mx-auto mx-lg-0" style="max-width: 600px;">Answer 3 simple questions to let our recommendation engine find the perfect studs matching your physical build and gameplay preferences.</p>
+                </div>
+                <div class="col-lg-4">
+                    <div class="mini-clip-container tilt-card" data-tilt data-tilt-max="10" data-tilt-speed="400">
+                        <img src="https://media.giphy.com/media/3o7TKrEzvpnWgwe2Q0/giphy.gif" alt="Real Football Footage">
+                        <div class="mini-clip-overlay">
+                            <span><i class="fa-solid fa-video text-crimson"></i> Real Footage</span>
+                            <p>Messi's Close Control</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="finder-wizard bg-card rounded-4 p-4 shadow" id="finder-wizard">
+                <!-- Step Indicator -->
+                <div class="wizard-steps">
+                    <div class="step-indicator active" data-step="1">1. Anatomical Fit</div>
+                    <div class="step-indicator" data-step="2">2. Position</div>
+                    <div class="step-indicator" data-step="3">3. Game Style</div>
+                </div>
+
+                <!-- Wizard Form -->
+                <div class="wizard-content">
+                    <!-- Step 1: Gender -->
+                    <div class="wizard-step active" data-step="1">
+                        <h3>Select your anatomical fit:</h3>
+                        <div class="option-grid">
+                            <label class="option-card">
+                                <input type="radio" name="finder-gender" value="Male" checked>
+                                <div class="option-box">
+                                    <i class="fa-solid fa-mars gender-male-color"></i>
+                                    <span>Men's Cut</span>
+                                    <p>Anatomically proportioned standard width and ankle profile.</p>
+                                </div>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="finder-gender" value="Female">
+                                <div class="option-box">
+                                    <i class="fa-solid fa-venus gender-female-color"></i>
+                                    <span>Women's Cut</span>
+                                    <p>Engineered for lower-profile foot volume, narrower heel, and custom arches.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Position -->
+                    <div class="wizard-step" data-step="2">
+                        <h3>Select your tactical field role:</h3>
+                        <div class="option-grid option-grid-4">
+                            <label class="option-card">
+                                <input type="radio" name="finder-position" value="Goalkeeper" checked>
+                                <div class="option-box">
+                                    <i class="fa-solid fa-hands-holding-child color-gk"></i>
+                                    <span>Goalkeeper</span>
+                                    <p>Command & stability</p>
+                                </div>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="finder-position" value="Defender">
+                                <div class="option-box">
+                                    <i class="fa-solid fa-shield-halved color-def"></i>
+                                    <span>Defender</span>
+                                    <p>Lockdown & protection</p>
+                                </div>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="finder-position" value="Midfielder">
+                                <div class="option-box">
+                                    <i class="fa-solid fa-dharmachakra color-mid"></i>
+                                    <span>Midfielder</span>
+                                    <p>360° Control & swerve</p>
+                                </div>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="finder-position" value="Attacker">
+                                <div class="option-box">
+                                    <i class="fa-solid fa-bolt-lightning color-att"></i>
+                                    <span>Attacker</span>
+                                    <p>Explosive speed & cuts</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Priority -->
+                    <div class="wizard-step" data-step="3">
+                        <h3>What is your main game priority?</h3>
+                        <div class="option-grid option-grid-4">
+                            <label class="option-card">
+                                <input type="radio" name="finder-priority" value="Speed" checked>
+                                <div class="option-box">
+                                    <i class="fa-solid fa-gauge-high"></i>
+                                    <span>Linear Speed</span>
+                                    <p>Ultra light speedskins & blades</p>
+                                </div>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="finder-priority" value="Control">
+                                <div class="option-box">
+                                    <i class="fa-solid fa-crosshairs"></i>
+                                    <span>Swerve & Control</span>
+                                    <p>Rubber elements & pass grip</p>
+                                </div>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="finder-priority" value="Touch">
+                                <div class="option-box">
+                                    <i class="fa-solid fa-feather-pointed"></i>
+                                    <span>Pure Soft Touch</span>
+                                    <p>Cushioned leather & dampening</p>
+                                </div>
+                            </label>
+                            <label class="option-card">
+                                <input type="radio" name="finder-priority" value="Stability">
+                                <div class="option-box">
+                                    <i class="fa-solid fa-anchor"></i>
+                                    <span>Lockdown & Grip</span>
+                                    <p>Rigid ankle plates & foam wraps</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wizard Actions -->
+                <div class="wizard-actions">
+                    <button type="button" class="btn btn-secondary" id="wizard-prev-btn" disabled>Back</button>
+                    <button type="button" class="btn btn-primary" id="wizard-next-btn">Next Step</button>
+                </div>
+            </div>
+
+            <!-- Recommendation Output Banner -->
+            <div class="finder-result-banner" id="finder-result-banner" style="display: none;">
+                <div class="result-details">
+                    <span class="recommend-tag">PERSONAL RECOMMENDATION</span>
+                    <h3 id="recommend-boot-name">Recommended Boot</h3>
+                    <div class="recommend-priority-badge" id="recommend-priority-badge">Speed</div>
+                    <p id="recommend-boot-desc">Description of the suggested boot goes here.</p>
+                    <div class="recommend-stats">
+                        <span id="recommend-boot-price">$220.00</span>
+                        <span id="recommend-boot-rating"><i class="fa-solid fa-star"></i> 4.8</span>
+                    </div>
+                    
+                    <div class="recommend-legends-container">
+                        <strong>Worn by Legends:</strong>
+                        <div id="recommend-boot-legends" class="legends-badges">
+                            <!-- Players injected here -->
+                        </div>
+                    </div>
+
+                    <div class="recommend-actions">
+                        <button class="btn btn-primary" id="recommend-view-btn">View Specifications</button>
+                        <button class="btn btn-secondary" id="recommend-reset-btn"><i class="fa-solid fa-arrow-rotate-left"></i> Start Over</button>
+                    </div>
+                </div>
+                <div class="result-image">
+                    <img id="recommend-boot-img" src="" alt="Recommended Boot">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gender Main Sections -->
+    <section id="gender-section" class="gender-section">
+        <div class="section-header">
+            <h2>Select Category</h2>
+            <p>Boots engineered specifically for the anatomical requirements of male and female athletes.</p>
+        </div>
+        <div class="gender-tabs">
+            <button class="gender-tab active" data-gender="Male">
+                <i class="fa-solid fa-mars"></i>
+                <span>Men's Catalog</span>
+            </button>
+            <button class="gender-tab" data-gender="Female">
+                <i class="fa-solid fa-venus"></i>
+                <span>Women's Catalog</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Position Subsections Selector -->
+    <section id="position-selector" class="position-selector">
+        <div class="section-header">
+            <h2>Select Your Position</h2>
+            <p>Modern tactics demand specialized gear. Choose your role to view boots tailored for your playing style.</p>
+        </div>
+        <div class="position-grid">
+            <!-- Goalkeeper Card -->
+            <div class="position-card" data-position="Goalkeeper">
+                <div class="position-icon">
+                    <i class="fa-solid fa-hands-holding-child"></i>
+                </div>
+                <h3>Goalkeeper</h3>
+                <p>Command the area. Built for maximum ankle stability, heavy impact protection, and dependable traction during explosive lateral launches.</p>
+                <span class="position-link">Explore Boots <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+            <!-- Defender Card -->
+            <div class="position-card" data-position="Defender">
+                <div class="position-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3>Defender</h3>
+                <p>Hold the line. Engineered for impact resistance, robust lockdown, and smooth control for sweeping clearance and long-range passing.</p>
+                <span class="position-link">Explore Boots <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+            <!-- Midfielder Card -->
+            <div class="position-card" data-position="Midfielder">
+                <div class="position-icon">
+                    <i class="fa-solid fa-dharmachakra"></i>
+                </div>
+                <h3>Midfielder</h3>
+                <p>Master the tempo. Features high-grip contact zones, 360-degree pivoting, and cushioned layers to dictate passing and control ball swerve.</p>
+                <span class="position-link">Explore Boots <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+            <!-- Attacker Card -->
+            <div class="position-card" data-position="Attacker">
+                <div class="position-icon">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                </div>
+                <h3>Attacker</h3>
+                <p>Break the limit. Ultra-light speedskins, minimalistic structure, and aggressive chevron stud patterns for instant acceleration.</p>
+                <span class="position-link">Explore Boots <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Surface & Stud Type Guide Section -->
+    <section id="stud-guide-section" class="stud-guide-section">
+        <div class="section-header">
+            <h2>Stud Type Guide</h2>
+            <p>Different pitch surfaces demand different stud geometries. Know your surface — dominate the game.</p>
+        </div>
+
+        <!-- Visual Banner -->
+        <div class="stud-guide-banner">
+            <img src="{{ url_for('static', filename='images/stud_guide.jpg') }}" alt="Stud Types Visual Guide">
+            <div class="stud-guide-banner-overlay">
+                <span>7 Surface Types · 40+ Boot Models · Find Your Match</span>
+            </div>
+        </div>
+
+        <!-- Surface Cards Grid -->
+        <div class="surface-cards-grid">
+
+            <div class="surface-card fg-card" data-stud="FG">
+                <div class="surface-icon">
+                    <i class="fa-solid fa-circle-dot"></i>
+                </div>
+                <div class="surface-badge-pill">FG</div>
+                <h4>Firm Ground</h4>
+                <p class="surface-desc">Natural grass — dry or slightly damp. The most commonly used stud type worldwide.</p>
+                <ul class="surface-features">
+                    <li><i class="fa-solid fa-check"></i> Conical + bladed mixed studs</li>
+                    <li><i class="fa-solid fa-check"></i> TPU or carbon fibre plate</li>
+                    <li><i class="fa-solid fa-check"></i> Premier League, La Liga, Champions League</li>
+                </ul>
+                <div class="surface-who">
+                    <span>Used by:</span>
+                    <span class="legend-chip">Mbappé</span>
+                    <span class="legend-chip">Haaland</span>
+                    <span class="legend-chip">De Bruyne</span>
+                </div>
+                <button class="surface-filter-btn" onclick="filterByStud('FG')">
+                    <i class="fa-solid fa-filter"></i> Filter FG Boots
+                </button>
+            </div>
+
+            <div class="surface-card sg-card" data-stud="SG">
+                <div class="surface-icon">
+                    <i class="fa-solid fa-droplet"></i>
+                </div>
+                <div class="surface-badge-pill">SG</div>
+                <h4>Soft Ground</h4>
+                <p class="surface-desc">Wet, muddy, waterlogged natural pitches. Long removable metal studs bite deep for grip.</p>
+                <ul class="surface-features">
+                    <li><i class="fa-solid fa-check"></i> Removable metal / hybrid studs</li>
+                    <li><i class="fa-solid fa-check"></i> Anti-clog traction design</li>
+                    <li><i class="fa-solid fa-check"></i> Winter UK/Northern Europe fixtures</li>
+                </ul>
+                <div class="surface-who">
+                    <span>Used by:</span>
+                    <span class="legend-chip">Van Dijk</span>
+                    <span class="legend-chip">Rashford</span>
+                    <span class="legend-chip">Neuer</span>
+                </div>
+                <button class="surface-filter-btn" onclick="filterByStud('SG')">
+                    <i class="fa-solid fa-filter"></i> Filter SG Boots
+                </button>
+            </div>
+
+            <div class="surface-card ag-card" data-stud="AG">
+                <div class="surface-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div class="surface-badge-pill">AG</div>
+                <h4>Artificial Ground</h4>
+                <p class="surface-desc">3G / 4G rubber-crumb synthetic turf. AG-certified short studs spread load evenly to protect joints.</p>
+                <ul class="surface-features">
+                    <li><i class="fa-solid fa-check"></i> Short rubber or TPU studs (50–70 pegs)</li>
+                    <li><i class="fa-solid fa-check"></i> AG-certified soleplate</li>
+                    <li><i class="fa-solid fa-check"></i> Academy training, stadium 3G pitches</li>
+                </ul>
+                <div class="surface-who">
+                    <span>Used by:</span>
+                    <span class="legend-chip">Mané</span>
+                    <span class="legend-chip">Saka</span>
+                    <span class="legend-chip">Ederson</span>
+                </div>
+                <button class="surface-filter-btn" onclick="filterByStud('AG')">
+                    <i class="fa-solid fa-filter"></i> Filter AG Boots
+                </button>
+            </div>
+
+            <div class="surface-card tf-card" data-stud="TF">
+                <div class="surface-icon">
+                    <i class="fa-solid fa-grip"></i>
+                </div>
+                <div class="surface-badge-pill">TF</div>
+                <h4>Turf</h4>
+                <p class="surface-desc">Hard AstroTurf, rubber granule surfaces, and tarmac cage pitches. Dense rubber nub outsole for grip without damage.</p>
+                <ul class="surface-features">
+                    <li><i class="fa-solid fa-check"></i> Dozens of tiny rubber nubs across full sole</li>
+                    <li><i class="fa-solid fa-check"></i> No individual studs — flat rubber pattern</li>
+                    <li><i class="fa-solid fa-check"></i> Cage football, Powerleague, 5-a-side</li>
+                </ul>
+                <div class="surface-who">
+                    <span>Used by:</span>
+                    <span class="legend-chip">Thierry Henry</span>
+                    <span class="legend-chip">Tobin Heath</span>
+                </div>
+                <button class="surface-filter-btn" onclick="filterByStud('TF')">
+                    <i class="fa-solid fa-filter"></i> Filter TF Boots
+                </button>
+            </div>
+
+            <div class="surface-card ic-card" data-stud="IC">
+                <div class="surface-icon">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <div class="surface-badge-pill">IC</div>
+                <h4>Indoor Court</h4>
+                <p class="surface-desc">Sports halls, futsal courts, wooden gym floors. Flat non-marking rubber sole for quick pivots without scuffing the surface.</p>
+                <ul class="surface-features">
+                    <li><i class="fa-solid fa-check"></i> Completely flat rubber sole (non-marking)</li>
+                    <li><i class="fa-solid fa-check"></i> Low-profile silhouette</li>
+                    <li><i class="fa-solid fa-check"></i> Futsal, indoor arenas, sports halls</li>
+                </ul>
+                <div class="surface-who">
+                    <span>Used by:</span>
+                    <span class="legend-chip">Falcão (Futsal)</span>
+                    <span class="legend-chip">Ferrão</span>
+                </div>
+                <button class="surface-filter-btn" onclick="filterByStud('IC')">
+                    <i class="fa-solid fa-filter"></i> Filter IC Boots
+                </button>
+            </div>
+
+            <div class="surface-card hg-card" data-stud="HG">
+                <div class="surface-icon">
+                    <i class="fa-solid fa-sun"></i>
+                </div>
+                <div class="surface-badge-pill">HG</div>
+                <h4>Hard Ground</h4>
+                <p class="surface-desc">Compact, sun-baked natural earth pitches common in South Asia, North Africa, and Middle East. Short firm rubber studs prevent jarring on impact.</p>
+                <ul class="surface-features">
+                    <li><i class="fa-solid fa-check"></i> Short compact rubber or TPU studs</li>
+                    <li><i class="fa-solid fa-check"></i> Extra cushioning midsole</li>
+                    <li><i class="fa-solid fa-check"></i> Local leagues, desert pitches, dry climates</li>
+                </ul>
+                <div class="surface-who">
+                    <span>Used by:</span>
+                    <span class="legend-chip">Hakimi</span>
+                    <span class="legend-chip">En-Nesyri</span>
+                </div>
+                <button class="surface-filter-btn" onclick="filterByStud('HG')">
+                    <i class="fa-solid fa-filter"></i> Filter HG Boots
+                </button>
+            </div>
+
+            <div class="surface-card mg-card" data-stud="MG">
+                <div class="surface-icon">
+                    <i class="fa-solid fa-shuffle"></i>
+                </div>
+                <div class="surface-badge-pill">MG</div>
+                <h4>Multi Ground</h4>
+                <p class="surface-desc">Hybrid stud layout designed to perform across FG, AG, and HG surfaces — ideal for players who train on different pitches all week.</p>
+                <ul class="surface-features">
+                    <li><i class="fa-solid fa-check"></i> Mixed conical + rubber hybrid studs</li>
+                    <li><i class="fa-solid fa-check"></i> Versatile across 3+ surface types</li>
+                    <li><i class="fa-solid fa-check"></i> Training, recreational, weekend players</li>
+                </ul>
+                <div class="surface-who">
+                    <span>Used by:</span>
+                    <span class="legend-chip">Sadio Mané</span>
+                    <span class="legend-chip">Gareth Bale</span>
+                </div>
+                <button class="surface-filter-btn" onclick="filterByStud('MG')">
+                    <i class="fa-solid fa-filter"></i> Filter MG Boots
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Catalog Section with Filters and Grid -->
+    <section id="catalog-section" class="catalog-section py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Filters Sidebar -->
+                <aside class="col-lg-3 mb-4">
+                <div class="filter-header">
+                    <h3><i class="fa-solid fa-sliders"></i> Filters</h3>
+                    <button id="reset-filters-btn" class="reset-btn">Reset All</button>
+                </div>
+
+                <!-- Active Filter Summary (Dynamic) -->
+                <div class="active-filters-summary" id="active-filters-summary">
+                    <!-- Dynamic badges here -->
+                </div>
+
+                <!-- Brand Filter Group -->
+                <div class="filter-group">
+                    <h4>Brands</h4>
+                    <div class="brand-checkboxes">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="brand-filter" value="Adidas">
+                            <span class="checkmark"></span>
+                            Adidas
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="brand-filter" value="Nike">
+                            <span class="checkmark"></span>
+                            Nike
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="brand-filter" value="Puma">
+                            <span class="checkmark"></span>
+                            Puma
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="brand-filter" value="New Balance">
+                            <span class="checkmark"></span>
+                            New Balance
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="brand-filter" value="Reebok">
+                            <span class="checkmark"></span>
+                            Reebok
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Stud Type Filter -->
+                <div class="filter-group">
+                    <h4><i class="fa-solid fa-circle-dot"></i> Stud Type</h4>
+                    <div class="stud-chips" id="stud-filter-chips">
+                        <button class="stud-chip active" data-stud="">All Surfaces</button>
+                        <button class="stud-chip fg-chip"  data-stud="FG">FG – Firm Ground</button>
+                        <button class="stud-chip sg-chip"  data-stud="SG">SG – Soft Ground</button>
+                        <button class="stud-chip ag-chip"  data-stud="AG">AG – Artificial</button>
+                        <button class="stud-chip tf-chip"  data-stud="TF">TF – Turf</button>
+                        <button class="stud-chip ic-chip"  data-stud="IC">IC – Indoor</button>
+                        <button class="stud-chip hg-chip"  data-stud="HG">HG – Hard Ground</button>
+                        <button class="stud-chip mg-chip"  data-stud="MG">MG – Multi Ground</button>
+                    </div>
+                </div>
+
+                <!-- Boot Category Filter -->
+                <div class="filter-group">
+                    <h4><i class="fa-solid fa-tag"></i> Boot Category</h4>
+                    <div class="stud-chips" id="category-filter-chips">
+                        <button class="stud-chip active" data-cat="">All Categories</button>
+                        <button class="stud-chip" data-cat="Speed">Speed</button>
+                        <button class="stud-chip" data-cat="Control">Control</button>
+                        <button class="stud-chip" data-cat="Touch">Touch</button>
+                        <button class="stud-chip" data-cat="Power">Power</button>
+                        <button class="stud-chip" data-cat="Goalkeeper">Goalkeeper</button>
+                        <button class="stud-chip" data-cat="All-Round">All-Round</button>
+                    </div>
+                </div>
+
+                <!-- Max Price Slider -->
+                <div class="filter-group">
+                    <h4>Max Price</h4>
+                    <div class="price-slider-container">
+                        <input type="range" id="price-range" min="75" max="300" step="5" value="300">
+                        <div class="price-labels">
+                            <span>$75</span>
+                            <span id="price-val" class="highlight-val">$300</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sort Order -->
+                <div class="filter-group">
+                    <h4>Sort By</h4>
+                    <select id="sort-select" class="sort-dropdown">
+                        <option value="default">Featured</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Rating</option>
+                    </select>
+                </div>
+            </aside>
+
+            <!-- Catalog Content -->
+            <main class="col-lg-9">
+                <div class="catalog-results-header">
+                    <div class="results-count" id="results-count">Showing 0 boots</div>
+                    <div class="active-filters-badges" id="active-badges-list">
+                        <!-- Dynamic indicator pills -->
+                    </div>
+                </div>
+
+                <!-- Loader -->
+                <div id="loader" class="loader-container" style="display: none;">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Product Grid -->
+                <div class="product-grid" id="product-grid">
+                    <!-- Product cards injected by JS -->
+                </div>
+                
+                <!-- No Results State -->
+                <div id="no-results" class="no-results-state" style="display: none;">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <h3>No matching boots found</h3>
+                    <p>Try resetting or relaxing your filters to find more products.</p>
+                </div>
+            </main>
+        </div>
+        </div>
+    </section>
+
+    <!-- Product Detail Modal -->
+    <div id="detail-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="modal-close" aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-body">
+                <div class="modal-gallery">
+                    <div class="modal-badge-container">
+                        <span class="modal-badge brand-badge" id="modal-brand-tag">Brand</span>
+                        <span class="modal-badge position-badge" id="modal-position-tag">Position</span>
+                        <span class="modal-badge stud-badge" id="modal-stud-tag">FG</span>
+                    </div>
+                    <img id="modal-img" src="" alt="Boot Image">
+                </div>
+                <div class="modal-details">
+                    <h3 id="modal-name">Boot Name</h3>
+                    <div class="modal-meta">
+                        <span class="modal-colorway" id="modal-colorway-tag">Colorway</span>
+                        <span class="modal-rating" id="modal-rating-tag"><i class="fa-solid fa-star"></i> 4.9</span>
+                    </div>
+                    <div class="modal-price" id="modal-price-tag">$275.00</div>
+                    <p class="modal-desc" id="modal-desc-tag">Description text</p>
+                    
+                    <!-- Player Legends section -->
+                    <div class="modal-legends-container">
+                        <h4>Elite Legends Wearing This Stud</h4>
+                        <div class="modal-legends-list" id="modal-legends-list">
+                            <!-- Injected dynamically as pills -->
+                        </div>
+                    </div>
+
+                    <div class="modal-specs">
+                        <h4>Key Technology & Features</h4>
+                        <ul id="modal-features-list">
+                            <!-- Injected dynamically -->
+                        </ul>
+                    </div>
+
+                    <div class="purchase-box">
+                        <div class="size-selector">
+                            <label for="boot-size">Select Size (US):</label>
+                            <select id="boot-size">
+                                <option value="7">7.0</option>
+                                <option value="8">8.0</option>
+                                <option value="9" selected>9.0</option>
+                                <option value="10">10.0</option>
+                                <option value="11">11.0</option>
+                                <option value="12">12.0</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary add-to-cart-action">Add To Locker</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast-notification">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-msg">Added to locker!</span>
+    </div>
+
+    <!-- VINTAGE LEGENDS WALL -->
+    <section id="vintage-section" class="vintage-section">
+        <div class="section-header">
+            <span class="section-kicker">THE ARCHIVES</span>
+            <h2>Vintage <span class="gradient-text">Legends Wall</span></h2>
+            <p>The studs that built the game. From Pelé's Puma King to Zidane's Predator — these are the boots history was made in.</p>
+        </div>
+        <div class="vintage-hero-banner">
+            <img src="{{ url_for('static', filename='images/vintage_hero.jpg') }}" alt="Vintage Boots">
+            <div class="vintage-hero-overlay">
+                <div class="vintage-hero-text">
+                    <span class="vintage-era-badge">1960s &mdash; 2000s</span>
+                    <h3>Where Legends Were Born</h3>
+                    <p>Every stud tells a story. Every boot holds a memory.</p>
+                    <button class="btn btn-vintage" onclick="filterByEra('Vintage')">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Explore Vintage Catalog
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="vintage-boots-grid">
+
+            <div class="vintage-boot-card" onclick="filterByEra('Vintage')">
+                <div class="vintage-decade-label">1994</div>
+                <div class="vintage-card-img">
+                    <img src="{{ url_for('static', filename='images/vintage_nike_tiempo.jpg') }}" alt="Nike Tiempo Premier">
+                    <div class="vintage-glow nike-vintage-glow"></div>
+                </div>
+                <div class="vintage-card-body">
+                    <span class="vintage-brand-tag nike-tag">NIKE</span>
+                    <h4>Tiempo Premier</h4>
+                    <p>Worn by almost half the players in the '94 World Cup final. The boot that established Nike in world football.</p>
+                    <div class="vintage-legends-row"><span>Romário</span><span>Paolo Maldini</span><span>Cantona</span></div>
+                </div>
+            </div>
+
+            <div class="vintage-boot-card" onclick="filterByEra('Vintage')">
+                <div class="vintage-decade-label">1992</div>
+                <div class="vintage-card-img">
+                    <img src="{{ url_for('static', filename='images/vintage_umbro.jpg') }}" alt="Umbro Speciali">
+                    <div class="vintage-glow reebok-vintage-glow"></div>
+                </div>
+                <div class="vintage-card-body">
+                    <span class="vintage-brand-tag reebok-tag">UMBRO</span>
+                    <h4>Speciali (1992)</h4>
+                    <p>The iconic English boot. Roberto Carlos's impossible free-kick and Alan Shearer's endless goals.</p>
+                    <div class="vintage-legends-row"><span>Alan Shearer</span><span>Roberto Carlos</span><span>Michael Owen</span></div>
+                </div>
+            </div>
+
+            <div class="vintage-boot-card" onclick="filterByEra('Vintage')">
+                <div class="vintage-decade-label">1985</div>
+                <div class="vintage-card-img">
+                    <img src="{{ url_for('static', filename='images/vintage_mizuno.jpg') }}" alt="Mizuno Morelia">
+                    <div class="vintage-glow puma-vintage-glow"></div>
+                </div>
+                <div class="vintage-card-body">
+                    <span class="vintage-brand-tag">MIZUNO</span>
+                    <h4>Morelia (1985)</h4>
+                    <p>Lightweight Japanese craftsmanship meeting premium K-leather. A cult classic among true playmakers.</p>
+                    <div class="vintage-legends-row"><span>Rivaldo</span><span>Roberto Carlos</span><span>Careca</span></div>
+                </div>
+            </div>
+
+            <div class="vintage-boot-card" onclick="filterByEra('Vintage')">
+                <div class="vintage-decade-label">1984</div>
+                <div class="vintage-card-img">
+                    <img src="{{ url_for('static', filename='images/vintage_diadora.jpg') }}" alt="Diadora Brasil">
+                    <div class="vintage-glow adidas-vintage-glow"></div>
+                </div>
+                <div class="vintage-card-body">
+                    <span class="vintage-brand-tag">DIADORA</span>
+                    <h4>Brasil (1984)</h4>
+                    <p>Italian elegance. The undisputed boot of the 90s Serie A golden era and countless Ballon d'Or winners.</p>
+                    <div class="vintage-legends-row"><span>Roberto Baggio</span><span>Roy Keane</span><span>Zico</span></div>
+                </div>
+            </div>
+
+            <div class="vintage-boot-card featured-vintage" onclick="filterByEra('Vintage')">
+                <div class="vintage-decade-label r9-label">2004</div>
+                <div class="vintage-card-img">
+                    <img src="{{ url_for('static', filename='images/vintage_adidas_f50.jpg') }}" alt="Adidas F50">
+                    <div class="vintage-glow adidas-vintage-glow"></div>
+                </div>
+                <div class="vintage-card-body">
+                    <span class="vintage-brand-tag">ADIDAS</span>
+                    <h4>F50 (2004) &#9733;</h4>
+                    <p>The dawn of Adidas speed. Concealed laces and a striking chassis that birthed a legendary lineage.</p>
+                    <div class="vintage-legends-row"><span>Arjen Robben</span><span>Lionel Messi</span><span>Ashley Cole</span></div>
+                </div>
+            </div>
+
+            <div class="vintage-boot-card" onclick="filterByEra('Vintage')">
+                <div class="vintage-decade-label">1990</div>
+                <div class="vintage-card-img">
+                    <img src="{{ url_for('static', filename='images/vintage_lotto.jpg') }}" alt="Lotto Stadio">
+                    <div class="vintage-glow reebok-vintage-glow"></div>
+                </div>
+                <div class="vintage-card-body">
+                    <span class="vintage-brand-tag reebok-tag">LOTTO</span>
+                    <h4>Stadio (1990)</h4>
+                    <p>Defined by its vibrant green emblem, the Stadio was the boot of European champions and midfield generals.</p>
+                    <div class="vintage-legends-row"><span>Ruud Gullit</span><span>Andriy Shevchenko</span><span>Cafu</span></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="vintage-cta-row">
+            <button class="btn btn-vintage-outline" onclick="filterByEra('Vintage')">
+                <i class="fa-solid fa-archive"></i> View Full Vintage Collection
+            </button>
+        </div>
+    </section>
+
+    <!-- INDOOR / FUTSAL / MG SECTION -->
+    <section id="indoor-section" class="indoor-section">
+        <div class="section-header">
+            <span class="section-kicker">BEYOND THE PITCH</span>
+            <h2>Indoor, Futsal <span class="gradient-text">&amp; Multi-Ground</span></h2>
+            <p>From futsal courts and sports halls to hybrid 3G pitches — boots engineered for every surface you play on.</p>
+        </div>
+        <div class="indoor-surface-tabs">
+            <button class="indoor-tab active-tab" onclick="filterByStud('IC')">
+                <i class="fa-solid fa-house"></i>
+                <span>Indoor / Futsal</span>
+                <small>Sports halls, futsal courts</small>
+            </button>
+            <button class="indoor-tab" onclick="filterByStud('MG')">
+                <i class="fa-solid fa-shuffle"></i>
+                <span>Multi-Ground</span>
+                <small>FG + AG hybrid</small>
+            </button>
+            <button class="indoor-tab" onclick="filterByStud('TF')">
+                <i class="fa-solid fa-grip"></i>
+                <span>Turf / Cage</span>
+                <small>Astroturf, 5-a-side</small>
+            </button>
+        </div>
+        <div class="indoor-hero-banner">
+            <img src="{{ url_for('static', filename='images/indoor_hero.jpg') }}" alt="Indoor and Futsal Boots">
+            <div class="indoor-hero-overlay">
+                <div class="indoor-surface-card ic-hero">
+                    <i class="fa-solid fa-house"></i>
+                    <h4>Indoor / IC</h4>
+                    <p>Flat non-marking sole. Zero studs. Maximum court grip for futsal legends.</p>
+                    <button onclick="filterByStud('IC')" class="surface-quickbtn">Shop IC</button>
+                </div>
+                <div class="indoor-surface-card mg-hero">
+                    <i class="fa-solid fa-shuffle"></i>
+                    <h4>Multi-Ground</h4>
+                    <p>Hybrid stud layout. One boot, any surface — natural grass or 3G artificial.</p>
+                    <button onclick="filterByStud('MG')" class="surface-quickbtn">Shop MG</button>
+                </div>
+                <div class="indoor-surface-card tf-hero">
+                    <i class="fa-solid fa-grip"></i>
+                    <h4>Turf / Cage</h4>
+                    <p>Dense rubber nubs. Grip on astroturf, tarmac, and cage football.</p>
+                    <button onclick="filterByStud('TF')" class="surface-quickbtn">Shop TF</button>
+                </div>
+            </div>
+        </div>
+        <div class="futsal-legend-callout">
+            <div class="futsal-legend-icon"><i class="fa-solid fa-futbol"></i></div>
+            <div class="futsal-legend-text">
+                <h4>The Futsal Connection</h4>
+                <p>Messi, Ronaldo, Neymar &amp; Ronaldinho all credit futsal for their close-control brilliance. The right IC boot shapes the next generation of football legends.</p>
+            </div>
+            <div class="futsal-legends-chips">
+                <span class="futsal-chip"><i class="fa-solid fa-star"></i> Messi — futsal trained</span>
+                <span class="futsal-chip"><i class="fa-solid fa-star"></i> Neymar — IC courts</span>
+                <span class="futsal-chip"><i class="fa-solid fa-star"></i> Ronaldinho — São Paulo futsal</span>
+                <span class="futsal-chip"><i class="fa-solid fa-star"></i> Falcão — Futsal GOAT</span>
+            </div>
+        </div>
+    </section>
+
+    {% include 'footer.html' %}
+
+    <!-- Frontend logic -->
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/era_filter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    
+    <!-- Parallax and 3D Hover Effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Init Tilt for Product Cards
+            VanillaTilt.init(document.querySelectorAll(".product-card"), {
+                max: 10,
+                speed: 400,
+                glare: true,
+                "max-glare": 0.2,
+            });
+
+            // Custom Mouse Parallax for Hero Image
+            document.addEventListener('mousemove', function(e) {
+                const heroImage = document.querySelector('.floating-boot');
+                if (heroImage) {
+                    const x = (window.innerWidth - e.pageX * 2) / 90;
+                    const y = (window.innerHeight - e.pageY * 2) / 90;
+                    heroImage.style.transform = `translate(${x}px, ${y}px)`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

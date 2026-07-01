@@ -1,0 +1,114 @@
+{% include 'navbar.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | Dev Boot Finder</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .terms-header {
+            background: linear-gradient(135deg, var(--bg-dark), #1a1a2e);
+            padding: 80px 20px 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .terms-header h1 {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .terms-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .terms-container {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        .terms-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .terms-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: rgba(211, 47, 47, 0.3);
+        }
+        .terms-section h3 {
+            font-family: var(--font-heading);
+            color: var(--accent-red);
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .terms-section h3 i {
+            font-size: 1.2rem;
+        }
+        .terms-section p {
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        .terms-section .violation-clause {
+            background: rgba(211, 47, 47, 0.1);
+            border-left: 4px solid var(--accent-red);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+        }
+        .terms-section .violation-clause strong {
+            color: #ff4d4d;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .terms-footer-note {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body style="background-color: var(--bg-dark); color: var(--text-primary);">
+
+    <div class="terms-header">
+        <h1>Terms of Service</h1>
+        <p>Welcome to Dev Boot Finder. By accessing or using our platform, you agree to be bound by these terms. Please read them carefully.</p>
+    </div>
+
+    <div class="terms-container">
+        <div class="dynamic-terms">
+            {{ terms_text|safe }}
+        </div>
+        <div class="terms-footer-note">
+            Last Updated: October 2023 <br>
+            Dev Boot Finder reserves the right to modify these terms at any time. Continued use of the platform constitutes acceptance of the revised terms.
+        </div>
+    </div>
+
+{% include 'footer.html' %}
+</body>
+</html>

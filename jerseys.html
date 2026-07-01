@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jerseys - Dev Boot Finder</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body { 
+            background-color: var(--bg-dark);
+        }
+        .jersey-header {
+            padding: 8rem 5% 4rem 5%;
+            text-align: center;
+            background: radial-gradient(circle at top, rgba(211, 47, 47, 0.15) 0%, transparent 60%);
+        }
+        .jersey-header h1 {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        .jersey-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .nav-pills .nav-link { 
+            color: var(--text-secondary);
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            padding: 0.75rem 2rem;
+            transition: var(--transition-smooth);
+        }
+        .nav-pills .nav-link.active { 
+            background-color: var(--accent-red);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+        }
+        .nav-pills .nav-link:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+        .jersey-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 0 5% 5rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .jersey-card { 
+            background-color: var(--bg-card); 
+            border: 1px solid transparent; 
+            border-radius: 12px; 
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .jersey-card:hover {
+            transform: translateY(-8px);
+            background-color: var(--bg-card-hover);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        .jersey-img-wrap { 
+            background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 280px;
+        }
+        .jersey-img { 
+            max-width: 90%; 
+            max-height: 100%; 
+            object-fit: contain; 
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
+        }
+        .jersey-card:hover .jersey-img {
+            transform: scale(1.1) rotate(2deg);
+        }
+        .jersey-info {
+            padding: 1.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .jersey-info h5 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        .jersey-info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        .jersey-info h4 {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            margin-top: auto;
+        }
+        .btn-add-jersey {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-family: var(--font-heading);
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            width: 100%;
+            transition: var(--transition-smooth);
+        }
+        .jersey-card:hover .btn-add-jersey {
+            background-color: var(--accent-red);
+            border-color: var(--accent-red);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+        }
+    </style>
+<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/favicon.jpg') }}"></head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="jersey-header">
+    <h1><i class="fa-solid fa-shirt" style="color: var(--accent-red);"></i> Jersey Collection</h1>
+    <p>Complete your kit. Shop the most iconic retro legends and the sleekest modern gear, crafted for peak performance and style.</p>
+</div>
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="mini-clip-container tilt-card" data-tilt data-tilt-max="10" data-tilt-speed="400">
+                <img src="https://media.giphy.com/media/T0bC0L0Kz78AAAAC/giphy.gif" alt="Real Football Footage">
+                <div class="mini-clip-overlay">
+                    <span><i class="fa-solid fa-video text-crimson"></i> Real Footage</span>
+                    <p>Iconic Moments on the Pitch</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="nav nav-pills justify-content-center mb-5" id="jerseyTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active me-3" id="retro-tab" data-bs-toggle="tab" data-bs-target="#retro" type="button" role="tab">Retro Classics</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="modern-tab" data-bs-toggle="tab" data-bs-target="#modern" type="button" role="tab">Modern Kits</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="jerseyTabContent">
+    <!-- Retro Tab -->
+    <div class="tab-pane fade show active" id="retro" role="tabpanel">
+        <div class="jersey-grid">
+            {% for j in retro %}
+            <div class="jersey-card">
+                <div class="jersey-img-wrap">
+                    <img src="{{ j.image_url }}" alt="{{ j.name }}" class="jersey-img">
+                </div>
+                <div class="jersey-info">
+                    <h5>{{ j.name }}</h5>
+                    <p>{{ j.team }}</p>
+                    <h4>${{ "%.2f"|format(j.price) }}</h4>
+                    <button class="btn-add-jersey" data-id="{{ j.id }}"><i class="fa-solid fa-cart-plus me-2"></i> Add to Cart</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Modern Tab -->
+    <div class="tab-pane fade" id="modern" role="tabpanel">
+        <div class="jersey-grid">
+            {% for j in modern %}
+            <div class="jersey-card">
+                <div class="jersey-img-wrap">
+                    <img src="{{ j.image_url }}" alt="{{ j.name }}" class="jersey-img">
+                </div>
+                <div class="jersey-info">
+                    <h5>{{ j.name }}</h5>
+                    <p>{{ j.team }}</p>
+                    <h4>${{ "%.2f"|format(j.price) }}</h4>
+                    <button class="btn-add-jersey" data-id="{{ j.id }}"><i class="fa-solid fa-cart-plus me-2"></i> Add to Cart</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll('.btn-add-jersey').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const jerseyId = this.getAttribute('data-id');
+            const button = this;
+            
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ jersey_id: jerseyId })
+            }).then(res => res.json()).then(data => {
+                if(data.success) {
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<i class="fa-solid fa-check me-2"></i> Added!';
+                    button.style.backgroundColor = '#28a745';
+                    button.style.borderColor = '#28a745';
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.backgroundColor = '';
+                        button.style.borderColor = '';
+                    }, 2000);
+                }
+            }).catch(err => console.error(err));
+        });
+    });
+</script>
+</body>
+
+</html>
