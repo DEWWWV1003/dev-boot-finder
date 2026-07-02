@@ -8,7 +8,17 @@ import joblib
 import pandas as pd
 import ai_model
 
-app = Flask(__name__)
+base_dir = os.path.dirname(os.path.abspath(__file__))
+template_dir = os.path.join(base_dir, 'templates')
+static_dir = os.path.join(base_dir, 'static')
+
+# Fallback just in case GitHub drag-and-drop flattened the folders
+if not os.path.isdir(template_dir):
+    template_dir = base_dir
+if not os.path.isdir(static_dir):
+    static_dir = base_dir
+
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = secrets.token_hex(32)
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.db')
@@ -646,6 +656,11 @@ def analyze_foot():
     return jsonify(result)
 
 # ─── STARTUP ──────────────────────────────────────────────────────────────────
-if __name__ == '__main__':
+# Initialize database tables for production (Render) environments
+try:
     init_users_table()
+except Exception as e:
+    print("Warning: Database initialization failed:", e)
+
+if __name__ == '__main__':
     app.run(debug=True, port=5000)
